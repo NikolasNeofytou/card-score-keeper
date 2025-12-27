@@ -234,10 +234,8 @@ class GameController extends StateNotifier<GameState> {
   }
 
   // Restore state from undo/redo
-  void restoreState(GameState restoredState) {
-    state = restoredState;
-    if (restoredState.currentGame != null) {
-      _repository.saveLastGame(restoredState.currentGame!);
-    }
+  void restoreState(model.Game restoredGame) {
+    state = GameState(currentGame: restoredGame);
+    _repository.saveLastGame(restoredGame);
   }
 }

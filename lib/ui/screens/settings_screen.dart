@@ -36,7 +36,7 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.palette_outlined),
                   title: const Text('Theme'),
-                  subtitle: Text(_getThemeLabel(themeState.mode)),
+                  subtitle: Text(_getThemeLabel(themeState.themeMode)),
                   trailing: SegmentedButton<ThemeMode>(
                     segments: const [
                       ButtonSegment(
@@ -48,7 +48,7 @@ class SettingsScreen extends ConsumerWidget {
                         icon: Icon(Icons.dark_mode, size: 18),
                       ),
                     ],
-                    selected: {themeState.mode},
+                    selected: {themeState.themeMode},
                     onSelectionChanged: (Set<ThemeMode> selected) {
                       ref.read(themeControllerProvider.notifier)
                           .setThemeMode(selected.first);

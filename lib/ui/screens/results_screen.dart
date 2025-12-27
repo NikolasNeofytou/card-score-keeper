@@ -47,8 +47,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
     _validate();
     if (_validationError == null) {
       // Record state before saving for undo
-      final currentState = ref.read(gameControllerProvider);
-      ref.read(undoControllerProvider.notifier).recordState(currentState);
+      final currentGame = ref.read(gameControllerProvider).currentGame;
+      if (currentGame != null) {
+        ref.read(undoControllerProvider.notifier).recordState(currentGame);
+      }
       
       await ref.read(gameControllerProvider.notifier).saveResults(_actualWins);
       if (mounted) {

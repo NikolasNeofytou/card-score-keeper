@@ -37,8 +37,10 @@ class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
   Future<void> _savePredictions() async {
     try {
       // Record state before saving for undo
-      final currentState = ref.read(gameControllerProvider);
-      ref.read(undoControllerProvider.notifier).recordState(currentState);
+      final currentGame = ref.read(gameControllerProvider).currentGame;
+      if (currentGame != null) {
+        ref.read(undoControllerProvider.notifier).recordState(currentGame);
+      }
       
       await ref.read(gameControllerProvider.notifier).savePredictions(_predictions);
       if (mounted) {

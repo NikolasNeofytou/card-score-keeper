@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../state/game_list_state.dart';
-import '../../state/game_list_controller.dart';
 import '../../state/providers.dart';
 import '../theme/app_colors.dart';
 
@@ -253,7 +252,7 @@ class _GameCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              game.name,
+                              game.name ?? 'Unnamed Game',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

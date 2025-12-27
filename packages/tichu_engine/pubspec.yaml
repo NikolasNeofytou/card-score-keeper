@@ -1,0 +1,16 @@
+name: tichu_engine
+description: Pure Dart engine for Tichu card game logic
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  equatable: ^2.0.5
+  json_annotation: ^4.8.1
+
+dev_dependencies:
+  test: ^1.24.0
+  build_runner: ^2.4.7
+  json_serializable: ^6.7.1
