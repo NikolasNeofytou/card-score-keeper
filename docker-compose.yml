@@ -1,0 +1,41 @@
+services:
+  card-scorekeeper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: card-scorekeeper
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    labels:
+      - "com.example.description=Card Game Scorekeeper Web App"
+      - "com.example.version=1.0.0"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Development environment with Flutter
+  card-scorekeeper-dev:
+    image: ghcr.io/cirruslabs/flutter:stable
+    container_name: card-scorekeeper-dev
+    working_dir: /app
+    volumes:
+      - .:/app
+      - flutter-pub-cache:/root/.pub-cache
+    ports:
+      - "5000:5000"
+    command: >
+      bash -c "flutter pub get && 
+               flutter run -d web-server --web-hostname 0.0.0.0 --web-port 5000"
+    profiles:
+      - dev
+
+volumes:
+  flutter-pub-cache:
+    name: flutter-pub-cache

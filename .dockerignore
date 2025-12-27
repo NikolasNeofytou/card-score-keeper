@@ -1,0 +1,43 @@
+# Docker-specific ignores
+Dockerfile
+docker-compose.yml
+.dockerignore
+nginx.conf
+
+# Build and run scripts
+build-and-run.sh
+build-and-run.ps1
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+LICENSE
+*.md
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+.metadata
+
+# Testing
+coverage/
+test/
+
+# Miscellaneous
+*.log
+*.swp
+.DS_Store
