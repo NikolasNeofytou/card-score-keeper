@@ -35,7 +35,7 @@ class TichuRuleset {
   factory TichuRuleset.standard() => const TichuRuleset();
 
   factory TichuRuleset.quick() => const TichuRuleset(
-        targetScore = 500,
+        targetScore: 500,
       );
 
   factory TichuRuleset.noDoubleVictory() => const TichuRuleset(

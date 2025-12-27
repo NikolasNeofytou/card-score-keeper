@@ -14,11 +14,9 @@ class ScoringService {
 
     // Check for double victory (1-2 finish)
     if (ruleset.allowDoubleVictory && _hasDoubleVictory(state)) {
-      final winningTeam = state.teamForPlayer(
-        state.players
-            .firstWhere((p) => p.finishPosition == 1)
-            .id as int,
-      );
+      final firstPlayer = state.players.firstWhere((p) => p.finishPosition == 1);
+      final firstPlayerIndex = state.players.indexOf(firstPlayer);
+      final winningTeam = state.teamForPlayer(firstPlayerIndex);
       final teamKey = 'team$winningTeam';
       scores[teamKey] = ruleset.doubleVictoryPoints;
       return scores;
@@ -32,11 +30,9 @@ class ScoringService {
 
       // Add points from unfinished player's hand to the team that finished first
       if (!player.hasFinished) {
-        final firstFinishTeam = state.teamForPlayer(
-          state.players
-              .firstWhere((p) => p.finishPosition == 1)
-              .id as int,
-        );
+        final firstPlayer = state.players.firstWhere((p) => p.finishPosition == 1);
+        final firstPlayerIndex = state.players.indexOf(firstPlayer);
+        final firstFinishTeam = state.teamForPlayer(firstPlayerIndex);
         scores['team$firstFinishTeam'] =
             (scores['team$firstFinishTeam'] ?? 0) + player.pointsInHand;
       }

@@ -13,7 +13,7 @@ class TichuCard extends Equatable {
   final Rank? rank;
   final SpecialCard? special;
 
-  const TichuCard._({
+  const TichuCard({
     this.suit,
     this.rank,
     this.special,

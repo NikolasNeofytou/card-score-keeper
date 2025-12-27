@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'card.dart';
+
+part 'combination.g.dart';
 
 /// Types of valid card combinations in Tichu
 enum CombinationType {
@@ -13,6 +16,7 @@ enum CombinationType {
 }
 
 /// Represents a valid combination of cards
+@JsonSerializable()
 class Combination extends Equatable {
   final List<TichuCard> cards;
   final CombinationType type;
@@ -42,4 +46,9 @@ class Combination extends Equatable {
 
   @override
   List<Object?> get props => [cards, type, highValue];
+
+  factory Combination.fromJson(Map<String, dynamic> json) =>
+      _$CombinationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CombinationToJson(this);
 }
