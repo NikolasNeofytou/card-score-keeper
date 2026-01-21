@@ -46,3 +46,10 @@ app.*.map.json
 # Hive database files
 *.hive
 *.lock
+
+# Generated Hive TypeAdapter files
+*.g.dart
+
+# Build runner generated files
+*.freezed.dart
+*.json_annotation.dart

@@ -1,7 +1,8 @@
 // lib/state/providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/game_repository.dart';
-import '../data/hive_game_repository.dart';
+import '../data/hardened_hive_repository.dart';
+import '../data/persistence/corruption_recovery.dart';
 import 'game_controller.dart';
 import 'game_state.dart';
 import 'game_list_controller.dart';
@@ -11,9 +12,20 @@ import 'undo_state.dart';
 import 'theme_controller.dart';
 import 'theme_state.dart';
 
-// Repository Provider
+// Repository Provider with initialization
 final gameRepositoryProvider = Provider<GameRepository>((ref) {
-  return HiveGameRepository();
+  final repository = HardenedHiveRepository();
+  // Initialize asynchronously - the repository will handle lazy init
+  repository.initialize().catchError((e) {
+    print('Repository initialization error: $e');
+  });
+  return repository;
+});
+
+// Storage health monitoring provider
+final storageHealthProvider = FutureProvider<StorageHealthReport>((ref) async {
+  final repository = ref.read(gameRepositoryProvider) as HardenedHiveRepository;
+  return await repository.performHealthCheck();
 });
 
 // Game Controller Provider

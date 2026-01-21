@@ -1,0 +1,22 @@
+# Set default line ending behavior for all files
+* text=auto
+
+# Ensure Dart files use LF line endings
+*.dart text eol=lf
+
+# Ensure generated files use LF line endings  
+*.g.dart text eol=lf
+
+# Windows specific files should use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
