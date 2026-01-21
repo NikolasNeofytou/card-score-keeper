@@ -2,12 +2,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/models/game.dart';
 import 'undo_state.dart';
-import 'game_controller.dart';
-
-final undoControllerProvider =
-    StateNotifierProvider<UndoController, UndoState>((ref) {
-  return UndoController();
-});
 
 class UndoController extends StateNotifier<UndoState> {
   UndoController() : super(const UndoState());

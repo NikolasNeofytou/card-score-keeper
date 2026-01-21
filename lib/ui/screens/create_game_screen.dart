@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../state/game_controller.dart';
+import '../../state/providers.dart';
 import '../widgets/number_stepper.dart';
 import '../theme/app_colors.dart';
 import '../widgets/animated/player_avatar.dart';
@@ -110,21 +110,23 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
-                        borderSide: BorderSide(color: AppColors.primary, width: 2),
+                        borderSide:
+                            BorderSide(color: AppColors.primary, width: 2),
                       ),
-                      prefixIcon: Icon(Icons.sports_esports, color: AppColors.textSecondary, size: 20),
+                      prefixIcon: Icon(Icons.sports_esports,
+                          color: AppColors.textSecondary, size: 20),
                     ),
                     onSaved: (value) => _gameName = value?.trim(),
                   ),
                 ),
               ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2, end: 0),
-                const SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Players',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
               ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
               const SizedBox(height: 12),
               ..._playerControllers.asMap().entries.map((entry) {
@@ -137,7 +139,9 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                     child: Row(
                       children: [
                         PlayerAvatar(
-                          name: controller.text.isEmpty ? 'P${index + 1}' : controller.text,
+                          name: controller.text.isEmpty
+                              ? 'P${index + 1}'
+                              : controller.text,
                           colorIndex: index,
                           size: 40,
                         ),
@@ -169,13 +173,17 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                         ),
                         if (_playerControllers.length > 2)
                           IconButton(
-                            icon: Icon(Icons.remove_circle, color: AppColors.error),
+                            icon: Icon(Icons.remove_circle,
+                                color: AppColors.error),
                             onPressed: () => _removePlayer(index),
                           ),
                       ],
                     ),
                   ),
-                ).animate().fadeIn(duration: 300.ms, delay: (200 + index * 50).ms).slideX(begin: -0.2, end: 0);
+                )
+                    .animate()
+                    .fadeIn(duration: 300.ms, delay: (200 + index * 50).ms)
+                    .slideX(begin: -0.2, end: 0);
               }),
               const SizedBox(height: 12),
               OutlinedButton.icon(
@@ -190,9 +198,9 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
               Text(
                 'Settings',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
               ).animate().fadeIn(duration: 400.ms, delay: 350.ms),
               const SizedBox(height: 12),
               Card(
@@ -205,7 +213,8 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                         value: _peakCards,
                         min: 2,
                         max: 13,
-                        onChanged: (value) => setState(() => _peakCards = value),
+                        onChanged: (value) =>
+                            setState(() => _peakCards = value),
                       ),
                       const SizedBox(height: 20),
                       NumberStepper(
@@ -213,7 +222,8 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                         value: _bonusExact,
                         min: 0,
                         max: 20,
-                        onChanged: (value) => setState(() => _bonusExact = value),
+                        onChanged: (value) =>
+                            setState(() => _bonusExact = value),
                       ),
                     ],
                   ),

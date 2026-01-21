@@ -4,11 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme_state.dart';
 
-final themeControllerProvider =
-    StateNotifierProvider<ThemeController, ThemeState>((ref) {
-  return ThemeController();
-});
-
 class ThemeController extends StateNotifier<ThemeState> {
   static const String _themeKey = 'theme_mode';
   static const String _useSystemKey = 'use_system_theme';

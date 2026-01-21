@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../state/game_controller.dart';
+import '../../state/providers.dart';
 import '../theme/app_colors.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -91,7 +91,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ).animate().fadeIn(duration: 400.ms),
                   const SizedBox(height: 32),
-                  
+
                   // Title
                   Text(
                     'Card Game Scorekeeper',
@@ -101,9 +101,9 @@ class HomeScreen extends ConsumerWidget {
                         ),
                     textAlign: TextAlign.center,
                   ).animate().fadeIn(duration: 400.ms),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   Text(
                     'Track scores and predict winners',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -111,9 +111,9 @@ class HomeScreen extends ConsumerWidget {
                         ),
                     textAlign: TextAlign.center,
                   ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // Action Buttons
                   if (gameState.currentGame != null) ...[
                     _buildButton(
@@ -124,9 +124,7 @@ class HomeScreen extends ConsumerWidget {
                       onPressed: () => context.go('/scoreboard'),
                       isPrimary: true,
                     ).animate().fadeIn(duration: 400.ms, delay: 400.ms).scale(),
-                    
                     const SizedBox(height: 16),
-                    
                     _buildButton(
                       context: context,
                       label: 'New Game',
@@ -135,15 +133,16 @@ class HomeScreen extends ConsumerWidget {
                       onPressed: () => context.go('/create'),
                       isPrimary: false,
                     ).animate().fadeIn(duration: 400.ms, delay: 500.ms).scale(),
-                    
                     const SizedBox(height: 16),
-                    
                     _buildButton(
                       context: context,
                       label: 'History',
                       icon: Icons.history,
                       gradient: LinearGradient(
-                        colors: [AppColors.textSecondary, AppColors.textTertiary],
+                        colors: [
+                          AppColors.textSecondary,
+                          AppColors.textTertiary
+                        ],
                       ),
                       onPressed: () => context.go('/history'),
                       isPrimary: false,
@@ -157,9 +156,7 @@ class HomeScreen extends ConsumerWidget {
                       onPressed: () => context.go('/create'),
                       isPrimary: true,
                     ).animate().fadeIn(duration: 400.ms, delay: 400.ms).scale(),
-                    
                     const SizedBox(height: 16),
-                    
                     _buildButton(
                       context: context,
                       label: 'View History',

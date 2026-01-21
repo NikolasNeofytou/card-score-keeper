@@ -2,22 +2,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../data/game_repository.dart';
-import '../data/hive_game_repository.dart';
 import '../domain/models/game.dart' as model;
 import '../domain/models/player.dart';
 import '../domain/models/round.dart';
 import '../domain/logic/schedule.dart';
 import '../domain/logic/validation.dart' as validation;
 import 'game_state.dart';
-
-final gameRepositoryProvider = Provider<GameRepository>((ref) {
-  return HiveGameRepository();
-});
-
-final gameControllerProvider =
-    StateNotifierProvider<GameController, GameState>((ref) {
-  return GameController(ref.watch(gameRepositoryProvider));
-});
 
 class GameController extends StateNotifier<GameState> {
   final GameRepository _repository;
@@ -60,9 +50,7 @@ class GameController extends StateNotifier<GameState> {
           index: index,
           cards: cards,
           status: RoundStatus.empty,
-          entries: players
-              .map((p) => RoundEntry(playerId: p.id))
-              .toList(),
+          entries: players.map((p) => RoundEntry(playerId: p.id)).toList(),
         );
       }).toList();
 
@@ -70,7 +58,8 @@ class GameController extends StateNotifier<GameState> {
       final game = model.Game(
         id: _uuid.v4(),
         name: gameName,
-        settings: model.GameSettings(peakCards: peakCards, bonusExact: bonusExact),
+        settings:
+            model.GameSettings(peakCards: peakCards, bonusExact: bonusExact),
         players: players,
         rounds: rounds,
         currentRoundIndex: 0,
@@ -91,7 +80,7 @@ class GameController extends StateNotifier<GameState> {
 
     try {
       final currentRound = game.rounds[game.currentRoundIndex];
-      
+
       // Update entries with predictions
       final updatedEntries = currentRound.entries.map((entry) {
         return entry.copyWith(predictedWins: predictions[entry.playerId]);
@@ -170,7 +159,8 @@ class GameController extends StateNotifier<GameState> {
       final updatedGame = game.copyWith(
         rounds: updatedRounds,
         currentRoundIndex: isFinished ? game.currentRoundIndex : nextRoundIndex,
-        state: isFinished ? model.GameState.finished : model.GameState.prediction,
+        state:
+            isFinished ? model.GameState.finished : model.GameState.prediction,
       );
 
       await _repository.saveLastGame(updatedGame);

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/models/round.dart';
-import '../../state/game_controller.dart';
+import '../../state/providers.dart';
 import '../../state/game_state.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -21,9 +21,8 @@ class HistoryScreen extends ConsumerWidget {
       );
     }
 
-    final completedRounds = game.rounds
-        .where((r) => r.status == RoundStatus.completed)
-        .toList();
+    final completedRounds =
+        game.rounds.where((r) => r.status == RoundStatus.completed).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -103,28 +102,32 @@ class HistoryScreen extends ConsumerWidget {
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
                                     'Player',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
                                     'Pred.',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
                                     'Actual',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
                                     'Points',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],

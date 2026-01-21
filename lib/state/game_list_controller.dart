@@ -1,18 +1,7 @@
 // lib/state/game_list_controller.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 import '../data/game_repository.dart';
-import '../domain/models/game.dart' as model;
-import '../domain/models/player.dart';
-import '../domain/models/round.dart';
-import '../domain/logic/schedule.dart';
 import 'game_list_state.dart';
-import 'game_controller.dart';
-
-final gameListControllerProvider =
-    StateNotifierProvider<GameListController, GameListState>((ref) {
-  return GameListController(ref.watch(gameRepositoryProvider));
-});
 
 class GameListController extends StateNotifier<GameListState> {
   final GameRepository _repository;
@@ -27,13 +16,13 @@ class GameListController extends StateNotifier<GameListState> {
     try {
       final games = await _repository.loadAllGames();
       final gameInfos = games.map((g) => GameInfo.fromGame(g)).toList();
-      
+
       // Set current game to the last modified active game
       final activeGames = gameInfos
           .where((g) => g.status == GameStatus.active)
           .toList()
         ..sort((a, b) => b.lastModified.compareTo(a.lastModified));
-      
+
       state = GameListState(
         games: gameInfos,
         currentGameId: activeGames.isNotEmpty ? activeGames.first.id : null,
@@ -69,7 +58,7 @@ class GameListController extends StateNotifier<GameListState> {
       }).toList();
 
       state = state.copyWith(games: updatedGames);
-      
+
       // If archiving current game, switch to another active game
       if (state.currentGameId == gameId) {
         final activeGames = state.activeGames;
@@ -77,7 +66,7 @@ class GameListController extends StateNotifier<GameListState> {
           currentGameId: activeGames.isNotEmpty ? activeGames.first.id : null,
         );
       }
-      
+
       await _saveGameList();
     } catch (e) {
       state = state.copyWith(error: e.toString());
@@ -87,10 +76,10 @@ class GameListController extends StateNotifier<GameListState> {
   Future<void> deleteGame(String gameId) async {
     try {
       await _repository.deleteGame(gameId);
-      
+
       final updatedGames = state.games.where((g) => g.id != gameId).toList();
       state = state.copyWith(games: updatedGames);
-      
+
       // If deleting current game, switch to another
       if (state.currentGameId == gameId) {
         final activeGames = state.activeGames;

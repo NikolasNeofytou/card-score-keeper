@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../state/theme_state.dart';
 import '../../state/providers.dart';
 import '../theme/app_colors.dart';
 
@@ -28,7 +27,9 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text('Follow system dark mode setting'),
                 value: themeState.useSystemTheme,
                 onChanged: (value) {
-                  ref.read(themeControllerProvider.notifier).setUseSystemTheme(value);
+                  ref
+                      .read(themeControllerProvider.notifier)
+                      .setUseSystemTheme(value);
                 },
                 secondary: const Icon(Icons.brightness_auto),
               ),
@@ -50,7 +51,8 @@ class SettingsScreen extends ConsumerWidget {
                     ],
                     selected: {themeState.themeMode},
                     onSelectionChanged: (Set<ThemeMode> selected) {
-                      ref.read(themeControllerProvider.notifier)
+                      ref
+                          .read(themeControllerProvider.notifier)
                           .setThemeMode(selected.first);
                     },
                   ),
