@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../state/game_state.dart';
+import '../../domain/logic/scoring.dart';
 import '../../state/providers.dart';
 import '../widgets/player_round_row.dart';
 import '../theme/app_colors.dart';
@@ -37,7 +37,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
   }
 
   void _validate() {
-    final error = ref.read(gameControllerProvider.notifier).validateResults(_actualWins);
+    final error =
+        ref.read(gameControllerProvider.notifier).validateResults(_actualWins);
     setState(() {
       _validationError = error;
     });
@@ -51,7 +52,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
       if (currentGame != null) {
         ref.read(undoControllerProvider.notifier).recordState(currentGame);
       }
-      
+
       await ref.read(gameControllerProvider.notifier).saveResults(_actualWins);
       if (mounted) {
         context.pop();
@@ -88,10 +89,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: totalWins == cardsThisRound ? AppColors.successBackground : AppColors.activeBackground,
+                  color: totalWins == cardsThisRound
+                      ? AppColors.successBackground
+                      : AppColors.activeBackground,
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color: totalWins == cardsThisRound ? AppColors.success : AppColors.primary,
+                    color: totalWins == cardsThisRound
+                        ? AppColors.success
+                        : AppColors.primary,
                     width: 1,
                   ),
                 ),
@@ -103,8 +108,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            totalWins == cardsThisRound ? Icons.check_circle : Icons.casino,
-                            color: totalWins == cardsThisRound ? AppColors.success : AppColors.primary,
+                            totalWins == cardsThisRound
+                                ? Icons.check_circle
+                                : Icons.casino,
+                            color: totalWins == cardsThisRound
+                                ? AppColors.success
+                                : AppColors.primary,
                             size: 20,
                           ),
                           SizedBox(width: 8),
@@ -123,8 +132,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                         '$cardsThisRound cards • Total wins: $totalWins / $cardsThisRound',
                         style: TextStyle(
                           fontSize: 14,
-                          color: totalWins == cardsThisRound ? AppColors.success : AppColors.textSecondary,
-                          fontWeight: totalWins == cardsThisRound ? FontWeight.w500 : FontWeight.normal,
+                          color: totalWins == cardsThisRound
+                              ? AppColors.success
+                              : AppColors.textSecondary,
+                          fontWeight: totalWins == cardsThisRound
+                              ? FontWeight.w500
+                              : FontWeight.normal,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -187,7 +200,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 8),
-                      color: correct ? AppColors.successBackground : AppColors.surface,
+                      color: correct
+                          ? AppColors.successBackground
+                          : AppColors.surface,
                       child: Container(
                         decoration: correct
                             ? BoxDecoration(
@@ -214,7 +229,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                   SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           player.name,
@@ -246,7 +262,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                       ),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.star, color: Colors.white, size: 14),
+                                          Icon(Icons.star,
+                                              color: Colors.white, size: 14),
                                           SizedBox(width: 4),
                                           Text(
                                             '+${game.settings.bonusExact}',
@@ -282,7 +299,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     padding: EdgeInsets.symmetric(
@@ -299,7 +317,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                       correct ? '✓ Correct!' : '✗ Incorrect',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: correct ? AppColors.success : AppColors.error,
+                                        color: correct
+                                            ? AppColors.success
+                                            : AppColors.error,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -328,7 +348,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                           ),
                         ),
                       ),
-                    ).animate().fadeIn(duration: 300.ms, delay: (50 * index).ms).slideX(begin: -0.2, end: 0);
+                    )
+                        .animate()
+                        .fadeIn(duration: 300.ms, delay: (50 * index).ms)
+                        .slideX(begin: -0.2, end: 0);
                   },
                 ),
               ),
@@ -339,7 +362,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                 decoration: BoxDecoration(
                   gradient: _validationError == null
                       ? AppColors.gradientPrimary
-                      : LinearGradient(colors: [Colors.grey, Colors.grey.shade700]),
+                      : LinearGradient(
+                          colors: [Colors.grey, Colors.grey.shade700]),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: _validationError == null
                       ? [

@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../domain/logic/scoring.dart';
 import '../../domain/models/round.dart';
 import '../../state/providers.dart';
-import '../../state/game_state.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});

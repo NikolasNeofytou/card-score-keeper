@@ -2,6 +2,7 @@
 import '../domain/models/game.dart';
 import '../domain/models/player.dart';
 import '../domain/models/round.dart';
+import '../domain/logic/scoring.dart';
 
 class GameState {
   final Game? currentGame;
@@ -28,7 +29,7 @@ class GameState {
   // Derived getters
   Map<String, int> get playerTotals {
     if (currentGame == null) return {};
-    
+
     final totals = <String, int>{};
     for (final player in currentGame!.players) {
       totals[player.id] = 0;
@@ -54,7 +55,7 @@ class GameState {
 
   List<LeaderboardEntry> get leaderboard {
     if (currentGame == null) return [];
-    
+
     final totals = playerTotals;
     final entries = currentGame!.players.map((player) {
       return LeaderboardEntry(
@@ -92,13 +93,4 @@ class LeaderboardEntry {
     required this.player,
     required this.totalPoints,
   });
-}
-
-int computeRoundPoints({
-  required int predictedWins,
-  required int actualWins,
-  required int bonusExact,
-}) {
-  final correct = actualWins == predictedWins;
-  return actualWins + (correct ? bonusExact : 0);
 }
