@@ -37,16 +37,10 @@ final gameControllerProvider =
   );
 });
 
-// Game List Controller Provider
+// Game List Controller Provider - single source of truth
 final gameListControllerProvider =
     StateNotifierProvider<GameListController, GameListState>((ref) {
   return GameListController(ref.read(gameRepositoryProvider));
-});
-
-// Game List State Provider
-final gameListProvider =
-    StateNotifierProvider<GameListController, GameListState>((ref) {
-  return ref.watch(gameListControllerProvider.notifier);
 });
 
 // Undo Controller Provider

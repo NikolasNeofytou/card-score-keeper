@@ -4,17 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../state/game_list_state.dart';
 import '../../state/providers.dart';
-import '../theme/app_colors.dart';
 
 class GameListScreen extends ConsumerWidget {
   const GameListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameListState = ref.watch(gameListProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final colors = isDark ? AppColorsDark : AppColors;
-    
+    final gameListState = ref.watch(gameListControllerProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+
     final activeGames = gameListState.games
         .where((g) => g.status == GameStatus.active)
         .toList();
@@ -40,34 +38,34 @@ class GameListScreen extends ConsumerWidget {
             _SectionHeader(
               title: 'Active Games',
               count: activeGames.length,
-              colors: colors,
+              colorScheme: colorScheme,
             ),
             const SizedBox(height: 12),
             ...activeGames.map((game) => _GameCard(
-              game: game,
-              isCurrent: game.id == gameListState.currentGameId,
-              onTap: () => _switchToGame(context, ref, game.id),
-              onArchive: () => _archiveGame(ref, game.id),
-              onDelete: () => _confirmDelete(context, ref, game.id),
-              colors: colors,
-            )),
+                  game: game,
+                  isCurrent: game.id == gameListState.currentGameId,
+                  onTap: () => _switchToGame(context, ref, game.id),
+                  onArchive: () => _archiveGame(ref, game.id),
+                  onDelete: () => _confirmDelete(context, ref, game.id),
+                  colorScheme: colorScheme,
+                )),
             const SizedBox(height: 24),
           ],
           if (archivedGames.isNotEmpty) ...[
             _SectionHeader(
               title: 'Archived Games',
               count: archivedGames.length,
-              colors: colors,
+              colorScheme: colorScheme,
             ),
             const SizedBox(height: 12),
             ...archivedGames.map((game) => _GameCard(
-              game: game,
-              isCurrent: false,
-              onTap: () => _unarchiveGame(ref, game.id),
-              onArchive: null,
-              onDelete: () => _confirmDelete(context, ref, game.id),
-              colors: colors,
-            )),
+                  game: game,
+                  isCurrent: false,
+                  onTap: () => _unarchiveGame(ref, game.id),
+                  onArchive: null,
+                  onDelete: () => _confirmDelete(context, ref, game.id),
+                  colorScheme: colorScheme,
+                )),
           ],
         ],
       ),
@@ -113,7 +111,8 @@ class GameListScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Game'),
-        content: const Text('Are you sure you want to permanently delete this game? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to permanently delete this game? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -123,7 +122,9 @@ class GameListScreen extends ConsumerWidget {
             onPressed: () async {
               Navigator.of(context).pop();
               try {
-                await ref.read(gameListControllerProvider.notifier).deleteGame(gameId);
+                await ref
+                    .read(gameListControllerProvider.notifier)
+                    .deleteGame(gameId);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -170,12 +171,12 @@ class GameListScreen extends ConsumerWidget {
 class _SectionHeader extends StatelessWidget {
   final String title;
   final int count;
-  final dynamic colors;
+  final ColorScheme colorScheme;
 
   const _SectionHeader({
     required this.title,
     required this.count,
-    required this.colors,
+    required this.colorScheme,
   });
 
   @override
@@ -187,23 +188,23 @@ class _SectionHeader extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
+            color: colorScheme.onBackground,
           ),
         ),
         const SizedBox(width: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: colors.surfaceVariant,
+            color: colorScheme.surfaceVariant,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colors.border),
+            border: Border.all(color: colorScheme.outline),
           ),
           child: Text(
             '$count',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: colors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -218,7 +219,7 @@ class _GameCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onArchive;
   final VoidCallback onDelete;
-  final dynamic colors;
+  final ColorScheme colorScheme;
 
   const _GameCard({
     required this.game,
@@ -226,13 +227,13 @@ class _GameCard extends StatelessWidget {
     required this.onTap,
     required this.onArchive,
     required this.onDelete,
-    required this.colors,
+    required this.colorScheme,
   });
 
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM d, yyyy h:mm a');
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -256,15 +257,16 @@ class _GameCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: colors.textPrimary,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                             if (isCurrent) ...[
                               const SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: colors.primary,
+                                  color: colorScheme.primary,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -272,7 +274,7 @@ class _GameCard extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: colors.surface,
+                                    color: colorScheme.onPrimary,
                                     letterSpacing: 0.5,
                                   ),
                                 ),
@@ -285,14 +287,15 @@ class _GameCard extends StatelessWidget {
                           '${game.playerCount} players',
                           style: TextStyle(
                             fontSize: 14,
-                            color: colors.textSecondary,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
                   ),
                   PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert, color: colors.textSecondary),
+                    icon: Icon(Icons.more_vert,
+                        color: colorScheme.onSurfaceVariant),
                     onSelected: (value) {
                       switch (value) {
                         case 'archive':
@@ -346,26 +349,28 @@ class _GameCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.access_time, size: 14, color: colors.textTertiary),
+                  Icon(Icons.access_time,
+                      size: 14, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 4),
                   Text(
                     'Created ${dateFormat.format(game.createdAt)}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: colors.textTertiary,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
               Row(
                 children: [
-                  Icon(Icons.update, size: 14, color: colors.textTertiary),
+                  Icon(Icons.update,
+                      size: 14, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 4),
                   Text(
                     'Updated ${dateFormat.format(game.lastModified)}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: colors.textTertiary,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],

@@ -443,7 +443,7 @@ CMD ["flutter", "run", "-d", "web-server", "--web-port=8080"]
 ### UI
 - `google_fonts: ^6.1.0` - Typography
 - `flutter_animate: ^4.5.0` - Animations
-- `fl_chart: ^0.66.0` - Charts
+
 
 ### Utilities
 - `shared_preferences: ^2.2.2` - Preferences

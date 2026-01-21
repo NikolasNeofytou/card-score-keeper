@@ -530,6 +530,19 @@ class ClutchScreen extends ConsumerWidget {
     final scores = leaderboard.map((entry) => entry.totalPoints).toList();
     scores.sort((a, b) => b.compareTo(a));
 
+    if (scores.isEmpty) {
+      return ClutchAnalysis(
+        isClutch: false,
+        clutchPlayers: [],
+        pointSpread: 0,
+        description: 'No scores available',
+        tensionLevel: 0.0,
+        roundsRemaining: 0,
+        tiedPlayersCount: 0,
+        indicators: [],
+      );
+    }
+
     final pointSpread = scores.first - scores.last;
     final roundsRemaining = game.rounds.length - game.currentRoundIndex - 1;
     final isNearEnd = roundsRemaining <= 3;

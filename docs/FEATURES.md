@@ -68,13 +68,12 @@ Each game tracks:
 #### UI Elements
 - Smooth animations using flutter_animate
 - Confetti celebrations for winners
-- Charts and graphs with fl_chart
 - Loading states with shimmer effects
 
 ### 6. History & Statistics
 #### Game History
 - Complete round-by-round history
-- Score evolution charts
+- Score evolution tracking
 - Prediction accuracy timeline
 - Player performance comparison
 
@@ -82,7 +81,7 @@ Each game tracks:
 - Lifetime statistics across all games
 - Per-game statistics
 - Player comparison tools
-- Trend analysis
+- Performance tracking
 
 ### 7. Theme Support
 #### Appearance Options

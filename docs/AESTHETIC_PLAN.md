@@ -227,7 +227,7 @@ dependencies:
   shimmer: ^3.0.0                   # Loading effect
   
   # Charts & Viz
-  fl_chart: ^0.66.0                 # Charts
+
   confetti: ^0.7.0                  # Celebration effects
   
   # Utils

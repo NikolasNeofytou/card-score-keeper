@@ -64,7 +64,7 @@ google_fonts: ^6.1.0        # Custom typography
 flutter_animate: ^4.5.0     # Animation utilities
 shimmer: ^3.0.0             # Shimmer effects
 confetti: ^0.7.0            # Celebration animations
-fl_chart: ^0.66.0           # Charts and graphs
+
 ```
 
 ### File Structure

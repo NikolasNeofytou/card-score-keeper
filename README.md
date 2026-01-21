@@ -25,7 +25,7 @@ A beautiful, feature-rich Flutter application for tracking scores in card games 
 - **Pre-Round Predictions**: Players predict their scores before each round
 - **Accuracy Tracking**: Monitor prediction accuracy over time
 - **Performance Metrics**: Win rates, averages, and trends
-- **Visual Statistics**: Charts and graphs using fl_chart
+- **Visual Statistics**: Score tracking and analysis
 
 ###  Modern UI
 - **GitHub-Inspired Design**: Clean, professional aesthetic
