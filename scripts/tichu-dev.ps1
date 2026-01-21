@@ -49,7 +49,7 @@ switch ($Command.ToLower()) {
     
     "server-deps" {
         Write-Host "📦 Getting dependencies for tichu_server..." -ForegroundColor Cyan
-        docker run --rm -v ${PWD}/services/tichu_server:/app -v ${PWD}/packages:/packages -w /app dart:stable dart pub get
+        docker run --rm -v ${PWD}/packages/tichu_server:/app -v ${PWD}/packages:/packages -w /app dart:stable dart pub get
         Write-Host "✅ Dependencies installed" -ForegroundColor Green
     }
     
@@ -60,7 +60,7 @@ switch ($Command.ToLower()) {
         Write-Host "(Server listens on port 8080 internally, mapped to 8081 on host)" -ForegroundColor Gray
         Write-Host "Press Ctrl+C to stop" -ForegroundColor Gray
         Write-Host ""
-        docker run --rm -p 8081:8080 -v ${PWD}/services/tichu_server:/app -v ${PWD}/packages:/packages -w /app dart:stable sh -c "dart pub get && dart bin/server.dart"
+        docker run --rm -p 8081:8080 -v ${PWD}/packages/tichu_server:/app -v ${PWD}/packages:/packages -w /app dart:stable sh -c "dart pub get && dart bin/server.dart"
     }
     
     "server-dev" {
@@ -68,7 +68,7 @@ switch ($Command.ToLower()) {
         Write-Host "Changes require restart (Ctrl+C and rerun)" -ForegroundColor Yellow
         Write-Host "Server on http://localhost:8081" -ForegroundColor Green
         Write-Host ""
-        docker run --rm -it -p 8081:8080 -v ${PWD}/services/tichu_server:/app -v ${PWD}/packages:/packages -w /app dart:stable sh -c "dart pub get && dart bin/server.dart"
+        docker run --rm -it -p 8081:8080 -v ${PWD}/packages/tichu_server:/app -v ${PWD}/packages:/packages -w /app dart:stable sh -c "dart pub get && dart bin/server.dart"
     }
     
     "help" {

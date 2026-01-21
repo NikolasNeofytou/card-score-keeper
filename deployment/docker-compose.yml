@@ -1,8 +1,8 @@
 services:
   card-scorekeeper:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: deployment/Dockerfile
     container_name: card-scorekeeper
     ports:
       - "8080:80"
@@ -26,7 +26,7 @@ services:
     container_name: card-scorekeeper-dev
     working_dir: /app
     volumes:
-      - .:/app
+      - ..:/app
       - flutter-pub-cache:/root/.pub-cache
     ports:
       - "5000:5000"

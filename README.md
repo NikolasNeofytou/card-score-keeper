@@ -81,31 +81,31 @@ make help
 .\build-and-run.ps1 -Mode web
 
 # Build production web version
-.\build-and-run.ps1 -Mode web -Build
+.\scripts\build-and-run.ps1 -Mode web -Build
 
 # Run mobile version
-.\build-and-run.ps1 -Mode mobile
+.\scripts\build-and-run.ps1 -Mode mobile
 
 # Run with Docker
-.\build-and-run.ps1 -Mode docker
+.\scripts\build-and-run.ps1 -Mode docker
 
 # Clean and rebuild
-.\build-and-run.ps1 -Mode web -Clean
+.\scripts\build-and-run.ps1 -Mode web -Clean
 ```
 
 **Linux/Mac (Bash):**
 ```bash
 # Make script executable
-chmod +x build-and-run.sh
+chmod +x scripts/build-and-run.sh
 
 # Run web version
 ./build-and-run.sh web
 
 # Build production web version
-./build-and-run.sh web --build
+./scripts/build-and-run.sh web --build
 
 # Run mobile version
-./build-and-run.sh mobile
+./scripts/build-and-run.sh mobile
 
 # Run with Docker
 ./build-and-run.sh docker
@@ -161,21 +161,38 @@ flutter build apk --release  # Android
 flutter build ios --release  # iOS (requires macOS)
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-lib/
-├── app/
-│   ├── app.dart           # Main app widget
-│   └── router.dart        # Go router configuration
-├── domain/
-│   ├── models/           # Data models (Game, Player, Round)
-│   └── logic/            # Business logic (schedule, scoring, validation)
-├── data/                 # Persistence layer (Hive repository)
-├── state/                # Riverpod state management
-└── ui/
-    ├── screens/          # App screens
-    └── widgets/          # Reusable widgets
+card-score-keeper/
+├── deployment/          # Docker and deployment configuration
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── nginx.conf
+│   └── .dockerignore
+├── docs/               # Documentation files
+│   ├── API.md
+│   ├── ARCHITECTURE.md
+│   ├── QUICK_START.md
+│   └── ...
+├── lib/                # Main Flutter application
+│   ├── app/            # App configuration and routing
+│   ├── data/           # Data layer (repositories, storage)
+│   ├── domain/         # Business logic and models
+│   ├── state/          # State management (Riverpod)
+│   └── ui/             # User interface (screens, widgets)
+├── packages/           # Custom packages (monorepo)
+│   ├── tichu_engine/   # Tichu game logic
+│   └── tichu_server/   # WebSocket server
+├── scripts/            # Build and development scripts
+│   ├── build-and-run.ps1
+│   ├── build-and-run.sh
+│   └── tichu-dev.ps1
+├── test/               # Tests for main app
+│   ├── unit/           # Unit tests
+│   ├── integration/    # Integration tests
+│   └── widget_test.dart
+└── pubspec.yaml        # Flutter dependencies
 ```
 
 ## Usage

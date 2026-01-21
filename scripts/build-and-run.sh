@@ -92,7 +92,7 @@ start_docker() {
     fi
     
     echo -e "\033[33mBuilding Docker image...\033[0m"
-    docker-compose up --build
+    docker-compose -f deployment/docker-compose.yml up --build
 }
 
 # Main execution

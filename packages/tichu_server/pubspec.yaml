@@ -11,7 +11,7 @@ dependencies:
   shelf_web_socket: ^1.0.4
   uuid: ^4.2.1
   tichu_engine:
-    path: /packages/tichu_engine
+    path: ../tichu_engine
 
 dev_dependencies:
   test: ^1.24.0
