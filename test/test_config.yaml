@@ -1,0 +1,120 @@
+# Test Configuration for Flutter Card Scorekeeper
+
+# Coverage configuration
+coverage:
+  exclude:
+    # Generated files
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    
+    # External packages
+    - "packages/**"
+    
+    # Test files themselves
+    - "test/**"
+    
+    # Main entry points (minimal logic)
+    - "lib/main.dart"
+    
+    # Constants and configurations (no logic to test)
+    - "**/*_constants.dart"
+    - "**/app_colors.dart"
+
+# Flutter test configuration
+flutter:
+  uses-material-design: true
+  
+# Test timeout settings
+test:
+  timeout: 30s # 30 seconds default timeout for tests
+  
+# Test runner configuration
+test_runner:
+  # Enable debug mode for test development
+  debug: false
+  
+  # Randomize test execution order
+  shuffle: true
+  
+  # Run tests in parallel where possible
+  concurrency: 4
+  
+  # Test reporting
+  reporter: expanded # Show detailed test output
+  
+  # Platform configuration
+  platforms:
+    - vm    # Dart VM (for unit tests)
+    - chrome # Chrome browser (for web widget tests)
+
+# Test groups and tags
+groups:
+  unit:
+    - "test/unit/**"
+  
+  widget:
+    - "test/widget/**"
+  
+  integration:
+    - "test/integration/**"
+    
+  golden:
+    - "test/golden/**"
+
+# Performance test configuration
+performance:
+  # Memory usage limits
+  memory_limit: 512MB
+  
+  # Test execution time limits
+  execution_time_limit: 10s
+  
+  # Frame rendering limits
+  frame_budget: 16ms # 60 FPS target
+
+# Mock and stub configuration
+mocking:
+  # Generate mocks for these classes
+  generate_mocks:
+    - GameRepository
+    - StorageService
+    - NotificationService
+  
+  # Fake data providers
+  fakes:
+    - TestGameData
+    - MockPlayers
+    - SampleRounds
+
+# Golden file configuration
+golden_files:
+  # Update goldens with this flag
+  update: false
+  
+  # Golden file directory
+  directory: "test/golden/files/"
+  
+  # Image comparison threshold
+  threshold: 0.5 # 0.5% difference allowed
+
+# Test data configuration
+test_data:
+  # Sample games for testing
+  sample_games:
+    - name: "3 Player Game"
+      players: 3
+      rounds: 5
+    - name: "6 Player Game"  
+      players: 6
+      rounds: 3
+    - name: "Single Round Game"
+      players: 4
+      rounds: 1
+  
+  # Edge case scenarios
+  edge_cases:
+    - empty_game
+    - max_players
+    - min_players
+    - corrupted_data
+    - network_failure
