@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../domain/models/game.dart' as model;
 import '../../state/game_state.dart';
 import '../../state/providers.dart';
-import '../theme/app_colors.dart';
 import '../widgets/animated/trophy_icon.dart';
 import '../widgets/animated/player_avatar.dart';
 import '../widgets/animated/animated_score.dart';
@@ -125,8 +124,8 @@ class ScoreboardScreen extends ConsumerWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  AppColors.background,
-                  AppColors.surface,
+                  Theme.of(context).colorScheme.surface,
+                  Theme.of(context).colorScheme.surfaceContainer,
                 ],
               ),
             ),
@@ -137,13 +136,26 @@ class ScoreboardScreen extends ConsumerWidget {
                   // Round Info Card
                   Container(
                     decoration: BoxDecoration(
-                      gradient: isFinished
-                          ? AppColors.gradientGold
-                          : AppColors.gradientPrimary,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: isFinished
+                            ? [
+                                Theme.of(context).colorScheme.tertiary,
+                                Theme.of(context).colorScheme.tertiaryContainer
+                              ]
+                            : [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.primaryContainer
+                              ],
+                      ),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 6),
                         ),
@@ -159,7 +171,8 @@ class ScoreboardScreen extends ConsumerWidget {
                               if (isFinished)
                                 Icon(
                                   Icons.emoji_events,
-                                  color: AppColors.success,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                   size: 24,
                                 ),
                               if (isFinished) const SizedBox(width: 8),
@@ -171,8 +184,8 @@ class ScoreboardScreen extends ConsumerWidget {
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600,
                                   color: isFinished
-                                      ? AppColors.success
-                                      : AppColors.primary,
+                                      ? Theme.of(context).colorScheme.secondary
+                                      : Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             ],
@@ -183,7 +196,9 @@ class ScoreboardScreen extends ConsumerWidget {
                               '${currentRound.cards} cards • ${game.state == model.GameState.prediction ? 'Enter predictions' : 'Enter results'}',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.textSecondary,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -207,10 +222,15 @@ class ScoreboardScreen extends ConsumerWidget {
                     child: ElevatedButton(
                       onPressed: isFinished ? null : handlePrimaryAction,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.success,
-                        foregroundColor: Colors.white,
-                        disabledBackgroundColor: AppColors.surfaceDark,
-                        disabledForegroundColor: AppColors.textTertiary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSecondary,
+                        disabledBackgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        disabledForegroundColor:
+                            Theme.of(context).colorScheme.onSurfaceVariant,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                       child: Text(getButtonText()),
@@ -233,10 +253,14 @@ class ScoreboardScreen extends ConsumerWidget {
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
-            color: rank == 1 ? AppColors.successBackground : AppColors.surface,
+            color: rank == 1
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
-              color: rank == 1 ? AppColors.success : AppColors.border,
+              color: rank == 1
+                  ? Theme.of(context).colorScheme.secondary
+                  : Theme.of(context).colorScheme.outline,
               width: rank == 1 ? 2 : 1,
             ),
           ),
@@ -255,7 +279,9 @@ class ScoreboardScreen extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -280,7 +306,7 @@ class ScoreboardScreen extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: rank <= 3 ? FontWeight.bold : FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -291,7 +317,9 @@ class ScoreboardScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: rank == 1 ? AppColors.gold : AppColors.textPrimary,
+                    color: rank == 1
+                        ? Theme.of(context).colorScheme.tertiary
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],

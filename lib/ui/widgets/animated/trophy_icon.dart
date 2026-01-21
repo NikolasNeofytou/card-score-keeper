@@ -19,7 +19,7 @@ class TrophyIcon extends StatelessWidget {
       return SizedBox(width: size, height: size);
     }
 
-    final color = _getTrophyColor(rank);
+    final color = _getTrophyColor(context, rank);
     final icon = _getTrophyIcon(rank);
 
     return Container(
@@ -59,16 +59,16 @@ class TrophyIcon extends StatelessWidget {
         .shimmer(duration: const Duration(milliseconds: 1500));
   }
 
-  Color _getTrophyColor(int rank) {
+  Color _getTrophyColor(BuildContext context, int rank) {
     switch (rank) {
       case 1:
-        return AppColors.gold;
+        return Theme.of(context).colorScheme.tertiary;
       case 2:
-        return AppColors.silver;
+        return Theme.of(context).colorScheme.onSurfaceVariant;
       case 3:
-        return AppColors.bronze;
+        return Theme.of(context).colorScheme.outline;
       default:
-        return AppColors.textTertiary;
+        return Theme.of(context).colorScheme.onSurfaceVariant;
     }
   }
 

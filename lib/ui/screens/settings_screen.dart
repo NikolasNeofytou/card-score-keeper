@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/providers.dart';
-import '../theme/app_colors.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -9,8 +8,6 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(themeProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final colors = isDark ? AppColorsDark : AppColors;
 
     return Scaffold(
       appBar: AppBar(
@@ -20,7 +17,6 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           _SettingsSection(
             title: 'Appearance',
-            colors: colors,
             children: [
               SwitchListTile(
                 title: const Text('Use System Theme'),
@@ -62,7 +58,6 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           _SettingsSection(
             title: 'About',
-            colors: colors,
             children: [
               ListTile(
                 leading: const Icon(Icons.info_outline),
@@ -100,12 +95,10 @@ class SettingsScreen extends ConsumerWidget {
 class _SettingsSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
-  final dynamic colors;
 
   const _SettingsSection({
     required this.title,
     required this.children,
-    required this.colors,
   });
 
   @override
@@ -120,7 +113,7 @@ class _SettingsSection extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: colors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: 0.5,
             ),
           ),

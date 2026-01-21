@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../domain/logic/scoring.dart';
 import '../../state/providers.dart';
 import '../widgets/player_round_row.dart';
-import '../theme/app_colors.dart';
 import '../widgets/animated/player_avatar.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
@@ -82,7 +81,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
         elevation: 0,
       ),
       body: Container(
-        color: AppColors.background,
+        color: Theme.of(context).colorScheme.surface,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -90,13 +89,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
               Container(
                 decoration: BoxDecoration(
                   color: totalWins == cardsThisRound
-                      ? AppColors.successBackground
-                      : AppColors.activeBackground,
+                      ? Theme.of(context).colorScheme.secondaryContainer
+                      : Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
                     color: totalWins == cardsThisRound
-                        ? AppColors.success
-                        : AppColors.primary,
+                        ? Theme.of(context).colorScheme.secondary
+                        : Theme.of(context).colorScheme.primary,
                     width: 1,
                   ),
                 ),
@@ -112,8 +111,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                 ? Icons.check_circle
                                 : Icons.casino,
                             color: totalWins == cardsThisRound
-                                ? AppColors.success
-                                : AppColors.primary,
+                                ? Theme.of(context).colorScheme.secondary
+                                : Theme.of(context).colorScheme.primary,
                             size: 20,
                           ),
                           SizedBox(width: 8),
@@ -122,7 +121,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -133,8 +132,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                         style: TextStyle(
                           fontSize: 14,
                           color: totalWins == cardsThisRound
-                              ? AppColors.success
-                              : AppColors.textSecondary,
+                              ? Theme.of(context).colorScheme.secondary
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
                           fontWeight: totalWins == cardsThisRound
                               ? FontWeight.w500
                               : FontWeight.normal,
@@ -149,11 +148,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                 const SizedBox(height: 12),
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.error,
+                    color: Theme.of(context).colorScheme.error,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.error.withOpacity(0.3),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .error
+                            .withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -201,13 +203,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                     return Card(
                       margin: const EdgeInsets.only(bottom: 8),
                       color: correct
-                          ? AppColors.successBackground
-                          : AppColors.surface,
+                          ? Theme.of(context).colorScheme.secondaryContainer
+                          : Theme.of(context).colorScheme.surface,
                       child: Container(
                         decoration: correct
                             ? BoxDecoration(
                                 border: Border.all(
-                                  color: AppColors.success,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(6),
@@ -237,14 +240,18 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
-                                            color: AppColors.textPrimary,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
                                           ),
                                         ),
                                         Text(
                                           'Predicted: $predictedWins',
                                           style: TextStyle(
                                             fontSize: 14,
-                                            color: AppColors.textSecondary,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -257,7 +264,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: AppColors.success,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Row(
@@ -309,8 +318,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: correct
-                                          ? AppColors.success.withOpacity(0.2)
-                                          : AppColors.error.withOpacity(0.2),
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .secondary
+                                              .withValues(alpha: 0.2)
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .error
+                                              .withValues(alpha: 0.2),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -318,8 +333,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: correct
-                                            ? AppColors.success
-                                            : AppColors.error,
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .secondary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .error,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -330,7 +349,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                                       vertical: 6,
                                     ),
                                     decoration: BoxDecoration(
-                                      gradient: AppColors.gradientGold,
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .tertiaryContainer
+                                        ],
+                                      ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -361,14 +389,22 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                 height: 56,
                 decoration: BoxDecoration(
                   gradient: _validationError == null
-                      ? AppColors.gradientPrimary
+                      ? LinearGradient(
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.primaryContainer
+                          ],
+                        )
                       : LinearGradient(
                           colors: [Colors.grey, Colors.grey.shade700]),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: _validationError == null
                       ? [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.3),
                             blurRadius: 12,
                             offset: const Offset(0, 6),
                           ),

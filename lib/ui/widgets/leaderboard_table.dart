@@ -20,7 +20,8 @@ class LeaderboardTable extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Table(
-              border: TableBorder.all(color: Colors.grey.shade300),
+              border:
+                  TableBorder.all(color: Theme.of(context).colorScheme.outline),
               columnWidths: const {
                 0: FlexColumnWidth(1),
                 1: FlexColumnWidth(2),
@@ -28,19 +29,23 @@ class LeaderboardTable extends StatelessWidget {
               },
               children: [
                 TableRow(
-                  decoration: BoxDecoration(color: Colors.grey.shade200),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer),
                   children: const [
                     Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text('Rank', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text('Rank',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text('Player', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text('Player',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text('Points', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text('Points',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),

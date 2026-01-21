@@ -41,7 +41,7 @@ class _AnimatedScoreState extends State<AnimatedScore> {
   @override
   Widget build(BuildContext context) {
     final scoreDiff = widget.score - (widget.previousScore ?? widget.score);
-    
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -69,8 +69,14 @@ class _AnimatedScoreState extends State<AnimatedScore> {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: scoreDiff > 0
-                    ? AppColors.success.withOpacity(0.2)
-                    : AppColors.error.withOpacity(0.2),
+                    ? Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withValues(alpha: 0.2)
+                    : Theme.of(context)
+                        .colorScheme
+                        .error
+                        .withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -78,7 +84,9 @@ class _AnimatedScoreState extends State<AnimatedScore> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: scoreDiff > 0 ? AppColors.success : AppColors.error,
+                  color: scoreDiff > 0
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(context).colorScheme.error,
                 ),
               ),
             )
