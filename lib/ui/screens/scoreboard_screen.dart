@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../domain/models/game.dart' as model;
-import '../../domain/models/round.dart';
 import '../../state/game_state.dart';
 import '../../state/providers.dart';
 import '../theme/app_colors.dart';
@@ -44,7 +43,7 @@ class ScoreboardScreen extends ConsumerWidget {
 
     void handlePrimaryAction() {
       if (isFinished) return;
-      
+
       if (game.state == model.GameState.prediction) {
         context.push('/predictions');
       } else {
@@ -53,167 +52,175 @@ class ScoreboardScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(game.name ?? 'Scoreboard'),
-        actions: [
-          // Undo button
-          Consumer(
-            builder: (context, ref, _) {
-              final undoState = ref.watch(undoControllerProvider);
-              return IconButton(
-                icon: const Icon(Icons.undo),
-                onPressed: undoState.canUndo
-                    ? () {
-                        final previousState = ref.read(undoControllerProvider.notifier).undo();
-                        if (previousState != null) {
-                          ref.read(gameControllerProvider.notifier).restoreState(previousState);
+        appBar: AppBar(
+          title: Text(game.name ?? 'Scoreboard'),
+          actions: [
+            // Undo button
+            Consumer(
+              builder: (context, ref, _) {
+                final undoState = ref.watch(undoControllerProvider);
+                return IconButton(
+                  icon: const Icon(Icons.undo),
+                  onPressed: undoState.canUndo
+                      ? () {
+                          final previousState =
+                              ref.read(undoControllerProvider.notifier).undo();
+                          if (previousState != null) {
+                            ref
+                                .read(gameControllerProvider.notifier)
+                                .restoreState(previousState);
+                          }
                         }
-                      }
-                    : null,
-                tooltip: 'Undo',
-              );
-            },
-          ),
-          // Redo button
-          Consumer(
-            builder: (context, ref, _) {
-              final undoState = ref.watch(undoControllerProvider);
-              return IconButton(
-                icon: const Icon(Icons.redo),
-                onPressed: undoState.canRedo
-                    ? () {
-                        final nextState = ref.read(undoControllerProvider.notifier).redo();
-                        if (nextState != null) {
-                          ref.read(gameControllerProvider.notifier).restoreState(nextState);
-                        }
-                      }
-                    : null,
-                tooltip: 'Redo',
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () => context.push('/history'),
-            tooltip: 'Round History',
-          ),
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'new',
-                child: Text('New Game'),
-              ),
-            ],
-            onSelected: (value) {
-              if (value == 'new') {
-                context.go('/create');
-              }
-            },
-          ),
-        ],
-      ),
-      body: ConfettiCelebration(
-        shouldCelebrate: isFinished,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.background,
-                AppColors.surface,
-              ],
+                      : null,
+                  tooltip: 'Undo',
+                );
+              },
             ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // Round Info Card
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: isFinished
-                        ? AppColors.gradientGold
-                        : AppColors.gradientPrimary,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (isFinished)
-                            Icon(
-                              Icons.emoji_events,
-                              color: AppColors.success,
-                              size: 24,
-                            ),
-                          if (isFinished) const SizedBox(width: 8),
-                          Text(
-                            isFinished
-                                ? 'Game Complete!'
-                                : 'Round $roundNumber of $totalRounds',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: isFinished ? AppColors.success : AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (currentRound != null && !isFinished) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          '${currentRound.cards} cards • ${game.state == model.GameState.prediction ? 'Enter predictions' : 'Enter results'}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+            // Redo button
+            Consumer(
+              builder: (context, ref, _) {
+                final undoState = ref.watch(undoControllerProvider);
+                return IconButton(
+                  icon: const Icon(Icons.redo),
+                  onPressed: undoState.canRedo
+                      ? () {
+                          final nextState =
+                              ref.read(undoControllerProvider.notifier).redo();
+                          if (nextState != null) {
+                            ref
+                                .read(gameControllerProvider.notifier)
+                                .restoreState(nextState);
+                          }
+                        }
+                      : null,
+                  tooltip: 'Redo',
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.history),
+              onPressed: () => context.push('/history'),
+              tooltip: 'Round History',
+            ),
+            PopupMenuButton(
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'new',
+                  child: Text('New Game'),
+                ),
+              ],
+              onSelected: (value) {
+                if (value == 'new') {
+                  context.go('/create');
+                }
+              },
+            ),
+          ],
+        ),
+        body: ConfettiCelebration(
+          shouldCelebrate: isFinished,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.background,
+                  AppColors.surface,
+                ],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // Round Info Card
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: isFinished
+                          ? AppColors.gradientGold
+                          : AppColors.gradientPrimary,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
                         ),
                       ],
-                    ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (isFinished)
+                                Icon(
+                                  Icons.emoji_events,
+                                  color: AppColors.success,
+                                  size: 24,
+                                ),
+                              if (isFinished) const SizedBox(width: 8),
+                              Text(
+                                isFinished
+                                    ? 'Game Complete!'
+                                    : 'Round $roundNumber of $totalRounds',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: isFinished
+                                      ? AppColors.success
+                                      : AppColors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (currentRound != null && !isFinished) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              '${currentRound.cards} cards • ${game.state == model.GameState.prediction ? 'Enter predictions' : 'Enter results'}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ).animate().fadeIn(duration: 400.ms).scale(),
+
+                  const SizedBox(height: 24),
+
+                  // Leaderboard
+                  Expanded(
+                    child: _buildLeaderboard(gameState.leaderboard),
                   ),
-                ),
-              ).animate().fadeIn(duration: 400.ms).scale(),
-              
-              const SizedBox(height: 24),
-              
-              // Leaderboard
-              Expanded(
-                child: _buildLeaderboard(gameState.leaderboard),
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Action Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: isFinished ? null : handlePrimaryAction,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.success,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.surfaceDark,
-                    disabledForegroundColor: AppColors.textTertiary,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+
+                  const SizedBox(height: 16),
+
+                  // Action Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isFinished ? null : handlePrimaryAction,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.success,
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: AppColors.surfaceDark,
+                        disabledForegroundColor: AppColors.textTertiary,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: Text(getButtonText()),
+                    ),
                   ),
-                  child: Text(getButtonText()),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    ));
+        ));
   }
 
   Widget _buildLeaderboard(List<LeaderboardEntry> entries) {
@@ -222,7 +229,7 @@ class ScoreboardScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         final entry = entries[index];
         final rank = index + 1;
-        
+
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
@@ -253,9 +260,9 @@ class ScoreboardScreen extends ConsumerWidget {
                           ),
                         ),
                 ),
-                
+
                 const SizedBox(width: 16),
-                
+
                 // Player Avatar
                 PlayerAvatar(
                   name: entry.player.name,
@@ -263,9 +270,9 @@ class ScoreboardScreen extends ConsumerWidget {
                   size: 48,
                   showBorder: rank == 1,
                 ),
-                
+
                 const SizedBox(width: 16),
-                
+
                 // Player Name
                 Expanded(
                   child: Text(
@@ -277,7 +284,7 @@ class ScoreboardScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                
+
                 // Score
                 AnimatedScore(
                   score: entry.totalPoints,
@@ -290,7 +297,10 @@ class ScoreboardScreen extends ConsumerWidget {
               ],
             ),
           ),
-        ).animate().fadeIn(duration: 300.ms, delay: (50 * index).ms).slideX(begin: 0.2, end: 0);
+        )
+            .animate()
+            .fadeIn(duration: 300.ms, delay: (50 * index).ms)
+            .slideX(begin: 0.2, end: 0);
       },
     );
   }

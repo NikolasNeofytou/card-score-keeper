@@ -37,15 +37,14 @@ class HiveGameRepository implements GameRepository {
 
   @override
   Future<List<Game>> loadAllGames() async {
-    final box = await _box();
     final gameList = await loadGameList();
     final games = <Game>[];
-    
+
     for (final info in gameList) {
       final game = await loadGame(info.id);
       if (game != null) games.add(game);
     }
-    
+
     return games;
   }
 
@@ -63,18 +62,18 @@ class HiveGameRepository implements GameRepository {
     final box = await _box();
     final jsonStr = jsonEncode(game.toJson());
     await box.put('$_keyGamesPrefix${game.id}', jsonStr);
-    
+
     // Update game list
     final gameList = await loadGameList();
     final existingIndex = gameList.indexWhere((g) => g.id == game.id);
     final gameInfo = GameInfo.fromGame(game);
-    
+
     if (existingIndex >= 0) {
       gameList[existingIndex] = gameInfo;
     } else {
       gameList.add(gameInfo);
     }
-    
+
     await saveGameList(gameList);
   }
 
@@ -82,7 +81,7 @@ class HiveGameRepository implements GameRepository {
   Future<void> deleteGame(String gameId) async {
     final box = await _box();
     await box.delete('$_keyGamesPrefix$gameId');
-    
+
     // Update game list
     final gameList = await loadGameList();
     gameList.removeWhere((g) => g.id == gameId);
@@ -103,6 +102,8 @@ class HiveGameRepository implements GameRepository {
     final jsonStr = box.get(_keyGameList) as String?;
     if (jsonStr == null || jsonStr.isEmpty) return [];
     final jsonList = jsonDecode(jsonStr) as List;
-    return jsonList.map((json) => GameInfo.fromJson(json as Map<String, dynamic>)).toList();
+    return jsonList
+        .map((json) => GameInfo.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 }

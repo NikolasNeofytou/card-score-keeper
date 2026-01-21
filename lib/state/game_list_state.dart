@@ -66,8 +66,8 @@ class GameInfo {
     return GameInfo(
       id: game.id,
       name: game.name,
-      createdAt: DateTime.now(), // Would need to add to Game model
-      lastModified: DateTime.now(),
+      createdAt: game.createdAt,
+      lastModified: game.lastModified,
       status: game.state == GameState.finished
           ? GameStatus.completed
           : GameStatus.active,

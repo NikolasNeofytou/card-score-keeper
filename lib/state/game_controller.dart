@@ -8,12 +8,15 @@ import '../domain/models/round.dart';
 import '../domain/logic/schedule.dart';
 import '../domain/logic/validation.dart' as validation;
 import 'game_state.dart';
+import 'game_list_controller.dart';
 
 class GameController extends StateNotifier<GameState> {
   final GameRepository _repository;
+  final GameListController _gameListController;
   final _uuid = const Uuid();
 
-  GameController(this._repository) : super(const GameState()) {
+  GameController(this._repository, this._gameListController)
+      : super(const GameState()) {
     _loadLastGame();
   }
 
@@ -22,6 +25,23 @@ class GameController extends StateNotifier<GameState> {
     try {
       final game = await _repository.loadLastGame();
       state = GameState(currentGame: game, isLoading: false);
+    } catch (e) {
+      state = GameState(isLoading: false, error: e.toString());
+    }
+  }
+
+  /// Load a specific game by ID and make it the current game
+  Future<void> loadGame(String gameId) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final game = await _repository.loadGame(gameId);
+      if (game != null) {
+        await _repository.saveLastGame(game);
+        await _gameListController.switchToGame(gameId);
+        state = GameState(currentGame: game, isLoading: false);
+      } else {
+        state = GameState(isLoading: false, error: 'Game not found');
+      }
     } catch (e) {
       state = GameState(isLoading: false, error: e.toString());
     }
@@ -54,7 +74,8 @@ class GameController extends StateNotifier<GameState> {
         );
       }).toList();
 
-      // Create game
+      // Create game with timestamps
+      final now = DateTime.now();
       final game = model.Game(
         id: _uuid.v4(),
         name: gameName,
@@ -64,10 +85,17 @@ class GameController extends StateNotifier<GameState> {
         rounds: rounds,
         currentRoundIndex: 0,
         state: model.GameState.prediction,
+        createdAt: now,
+        lastModified: now,
       );
 
-      // Save and update state
+      // Save game using repository.saveGame() and update current game reference
+      await _repository.saveGame(game);
       await _repository.saveLastGame(game);
+
+      // Update current game ID in game list controller
+      await _gameListController.switchToGame(game.id);
+
       state = GameState(currentGame: game);
     } catch (e) {
       state = state.copyWith(error: e.toString());
@@ -96,12 +124,14 @@ class GameController extends StateNotifier<GameState> {
       final updatedRounds = List<GameRound>.from(game.rounds);
       updatedRounds[game.currentRoundIndex] = updatedRound;
 
-      // Update game
+      // Update game with lastModified timestamp
       final updatedGame = game.copyWith(
         rounds: updatedRounds,
         state: model.GameState.scoring,
       );
 
+      // Save game using repository.saveGame() and update current game reference
+      await _repository.saveGame(updatedGame);
       await _repository.saveLastGame(updatedGame);
       state = GameState(currentGame: updatedGame);
     } catch (e) {
@@ -156,6 +186,7 @@ class GameController extends StateNotifier<GameState> {
       final nextRoundIndex = game.currentRoundIndex + 1;
       final isFinished = nextRoundIndex >= game.rounds.length;
 
+      // Create updated game with new state and lastModified timestamp
       final updatedGame = game.copyWith(
         rounds: updatedRounds,
         currentRoundIndex: isFinished ? game.currentRoundIndex : nextRoundIndex,
@@ -163,6 +194,8 @@ class GameController extends StateNotifier<GameState> {
             isFinished ? model.GameState.finished : model.GameState.prediction,
       );
 
+      // Save game using repository.saveGame() and update current game reference
+      await _repository.saveGame(updatedGame);
       await _repository.saveLastGame(updatedGame);
       state = GameState(currentGame: updatedGame);
     } catch (e) {
@@ -204,13 +237,15 @@ class GameController extends StateNotifier<GameState> {
       final updatedRounds = List<GameRound>.from(game.rounds);
       updatedRounds[lastCompletedIndex] = clearedRound;
 
-      // Update game
+      // Update game with lastModified timestamp
       final updatedGame = game.copyWith(
         rounds: updatedRounds,
         currentRoundIndex: lastCompletedIndex,
         state: model.GameState.prediction,
       );
 
+      // Save game using repository.saveGame() and update current game reference
+      await _repository.saveGame(updatedGame);
       await _repository.saveLastGame(updatedGame);
       state = GameState(currentGame: updatedGame);
     } catch (e) {
@@ -225,7 +260,11 @@ class GameController extends StateNotifier<GameState> {
 
   // Restore state from undo/redo
   void restoreState(model.Game restoredGame) {
-    state = GameState(currentGame: restoredGame);
-    _repository.saveLastGame(restoredGame);
+    // Create updated game with new lastModified timestamp
+    final updatedGame = restoredGame.copyWith();
+
+    state = GameState(currentGame: updatedGame);
+    _repository.saveGame(updatedGame);
+    _repository.saveLastGame(updatedGame);
   }
 }

@@ -5,7 +5,6 @@ import 'game_list_state.dart';
 
 class GameListController extends StateNotifier<GameListState> {
   final GameRepository _repository;
-  final _uuid = const Uuid();
 
   GameListController(this._repository) : super(const GameListState()) {
     _loadGameList();

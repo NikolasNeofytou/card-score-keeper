@@ -17,27 +17,35 @@ final gameRepositoryProvider = Provider<GameRepository>((ref) {
 });
 
 // Game Controller Provider
-final gameControllerProvider = StateNotifierProvider<GameController, GameState>((ref) {
-  return GameController(ref.read(gameRepositoryProvider));
+final gameControllerProvider =
+    StateNotifierProvider<GameController, GameState>((ref) {
+  return GameController(
+    ref.read(gameRepositoryProvider),
+    ref.read(gameListControllerProvider.notifier),
+  );
 });
 
 // Game List Controller Provider
-final gameListControllerProvider = StateNotifierProvider<GameListController, GameListState>((ref) {
+final gameListControllerProvider =
+    StateNotifierProvider<GameListController, GameListState>((ref) {
   return GameListController(ref.read(gameRepositoryProvider));
 });
 
 // Game List State Provider
-final gameListProvider = StateNotifierProvider<GameListController, GameListState>((ref) {
+final gameListProvider =
+    StateNotifierProvider<GameListController, GameListState>((ref) {
   return ref.watch(gameListControllerProvider.notifier);
 });
 
 // Undo Controller Provider
-final undoControllerProvider = StateNotifierProvider<UndoController, UndoState>((ref) {
+final undoControllerProvider =
+    StateNotifierProvider<UndoController, UndoState>((ref) {
   return UndoController();
 });
 
 // Theme Controller Provider
-final themeControllerProvider = StateNotifierProvider<ThemeController, ThemeState>((ref) {
+final themeControllerProvider =
+    StateNotifierProvider<ThemeController, ThemeState>((ref) {
   return ThemeController();
 });
 
