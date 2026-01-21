@@ -14,6 +14,23 @@ import '../widgets/animated/confetti_celebration.dart';
 class ScoreboardScreen extends ConsumerWidget {
   const ScoreboardScreen({super.key});
 
+  bool _isClutchSituation(model.Game game, List<LeaderboardEntry> leaderboard) {
+    if (leaderboard.length < 2) return false;
+
+    final topScore = leaderboard[0].totalPoints;
+    final secondScore = leaderboard[1].totalPoints;
+    final scoreDifference = topScore - secondScore;
+
+    // Clutch if difference is small or if we're in the last few rounds
+    final isCloseScore = scoreDifference <= 30;
+    final isLateGame = game.currentRoundIndex >= (game.rounds.length * 0.7);
+    final hasNegativeScores = leaderboard.any((entry) => entry.totalPoints < 0);
+
+    return isCloseScore ||
+        (isLateGame && scoreDifference <= 50) ||
+        hasNegativeScores;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameState = ref.watch(gameControllerProvider);
@@ -208,6 +225,80 @@ class ScoreboardScreen extends ConsumerWidget {
                   ).animate().fadeIn(duration: 400.ms).scale(),
 
                   const SizedBox(height: 24),
+
+                  // Clutch Indicator
+                  if (_isClutchSituation(game, gameState.leaderboard) &&
+                      !isFinished)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Material(
+                        color: Theme.of(context).colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          onTap: () => context.push('/clutch'),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.local_fire_department,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer,
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'CLUTCH TIME!',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onErrorContainer,
+                                        ),
+                                      ),
+                                      Text(
+                                        'This game is getting intense!',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onErrorContainer
+                                              .withOpacity(0.8),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                        .animate(
+                          onPlay: (controller) =>
+                              controller.repeat(reverse: true),
+                        )
+                        .scale(
+                          begin: const Offset(1.0, 1.0),
+                          end: const Offset(1.02, 1.02),
+                          duration: 1000.ms,
+                        ),
 
                   // Leaderboard
                   Expanded(

@@ -8,6 +8,7 @@ import '../ui/screens/results_screen.dart';
 import '../ui/screens/history_screen.dart';
 import '../ui/screens/game_list_screen.dart';
 import '../ui/screens/settings_screen.dart';
+import '../ui/screens/clutch_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -43,6 +44,10 @@ final router = GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: '/clutch',
+      builder: (context, state) => const ClutchScreen(),
     ),
   ],
 );
