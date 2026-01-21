@@ -1,0 +1,176 @@
+# Test Configuration
+# This file documents the complete testing infrastructure for the Card Score Keeper app
+
+## Test Categories
+
+### Unit Tests (test/unit/)
+- **Purpose**: Test individual units of code in isolation
+- **Coverage**: Domain models, business logic, validation, scoring algorithms
+- **Files**:
+  - `models_test.dart`: Test all domain models (Game, Player, Round, GameSettings)
+  - `scoring_test.dart`: Test scoring calculation algorithms
+  - `validation_test.dart`: Test input validation and edge cases
+  - `schedule_test.dart`: Test round-robin scheduling logic
+
+### Widget Tests (test/widget/)  
+- **Purpose**: Test UI components and user interactions
+- **Coverage**: All screens, custom widgets, navigation, state changes
+- **Files**:
+  - `comprehensive_widget_test.dart`: Tests all screens and widgets with error handling
+  - Individual screen tests in separate files if needed
+
+### Integration Tests (test/integration/)
+- **Purpose**: Test complete app workflows end-to-end
+- **Coverage**: App startup, navigation flows, data persistence, user journeys
+- **Files**:
+  - `app_flow_test.dart`: Tests complete app startup and navigation
+  - Additional integration tests for specific user workflows
+
+### Performance Tests (test/performance/)
+- **Purpose**: Validate performance requirements and benchmarks
+- **Coverage**: Algorithm efficiency, memory usage, large dataset handling
+- **Files**:
+  - `performance_test.dart`: Benchmarks for core algorithms and operations
+  - Performance requirements validation
+
+### Golden File Tests (test/golden/)
+- **Purpose**: Visual regression testing and UI consistency
+- **Coverage**: Screen layouts, themes, responsive design, visual elements
+- **Files**:
+  - `golden_test.dart`: Golden file tests for all screens and themes
+  - Visual consistency across different screen sizes
+
+## Test Data and Utilities
+
+### Test Helpers (test/helpers/)
+- **Purpose**: Reusable test utilities and helper functions
+- **Files**:
+  - `test_helpers.dart`: Common test utilities and setup functions
+  - `test_data.dart`: Comprehensive test data factory
+
+### Mock Data (test/mocks/)
+- **Purpose**: Consistent test data for all test categories
+- **Coverage**: Sample players, games, rounds, edge cases, performance test data
+- **Files**:
+  - `test_data.dart`: Complete test data factory with all scenarios
+
+## Testing Standards
+
+### Code Coverage Requirements
+- **Unit Tests**: 95%+ coverage of domain logic
+- **Widget Tests**: 90%+ coverage of UI components
+- **Integration Tests**: Critical user paths covered
+- **Overall Target**: 90%+ code coverage
+
+### Performance Requirements
+- **Schedule Generation**: < 100ms for 8 players
+- **Scoring Calculation**: < 50ms for 100 rounds
+- **Memory Usage**: < 50MB for typical game data
+- **Startup Time**: < 2 seconds on mid-range devices
+
+### Test Quality Standards
+- **Isolation**: Each test should be independent
+- **Deterministic**: Tests should produce consistent results
+- **Comprehensive**: Cover happy path, edge cases, and error scenarios
+- **Maintainable**: Clear, readable test code with good documentation
+
+## CI/CD Pipeline Integration
+
+### Automated Testing
+- **Code Analysis**: Flutter analyze, formatting checks
+- **Unit Tests**: Run on every commit with coverage reporting
+- **Widget Tests**: Validate UI components
+- **Performance Tests**: Ensure performance benchmarks
+- **Integration Tests**: Validate complete workflows
+- **Golden Tests**: Prevent visual regressions
+
+### Build Matrix
+- **Platforms**: Web, Android, iOS
+- **Environments**: Development, Staging, Production
+- **Flutter Versions**: Current stable version
+
+### Deployment Gates
+- **All Tests Pass**: Required for deployment
+- **Code Coverage**: Must meet minimum thresholds
+- **Performance Benchmarks**: Must pass performance tests
+- **Security Checks**: Vulnerability scanning
+
+## Running Tests Locally
+
+### Individual Test Categories
+```bash
+# Unit tests with coverage
+flutter test test/unit/ --coverage
+
+# Widget tests
+flutter test test/widget/
+
+# Performance tests  
+flutter test test/performance/
+
+# Integration tests
+flutter test test/integration/
+
+# Golden file tests
+flutter test test/golden/
+
+# All tests
+flutter test
+```
+
+### Test Utilities
+```bash
+# Update golden files
+flutter test --update-goldens
+
+# Generate coverage report
+genhtml coverage/lcov.info -o coverage/html
+
+# Run tests in watch mode
+flutter test --watch
+```
+
+### Debug Test Issues
+```bash
+# Verbose test output
+flutter test --verbose
+
+# Run specific test file
+flutter test test/unit/models_test.dart
+
+# Run specific test case
+flutter test --name "Game creation"
+```
+
+## Test Maintenance
+
+### Regular Tasks
+- **Weekly**: Review test coverage and identify gaps
+- **Monthly**: Update golden files if UI changes
+- **Release**: Run full test suite including performance benchmarks
+- **Quarterly**: Review and update test data and scenarios
+
+### Best Practices
+- Keep tests simple and focused
+- Use descriptive test names
+- Mock external dependencies
+- Test edge cases and error conditions
+- Update tests when code changes
+- Document complex test scenarios
+
+## Test Environment Setup
+
+### Dependencies
+All testing dependencies are included in `pubspec.yaml`:
+- `flutter_test`: Core Flutter testing framework
+- `integration_test`: Integration testing support
+- `mockito`: Mocking framework
+- `build_runner`: Code generation for mocks
+
+### Configuration
+- Test timeout: 30 seconds (configurable in `dart_test.yaml`)
+- Coverage exclusions: Generated files, third-party code
+- Golden file threshold: Exact pixel matching
+- Performance test tolerances: Defined in test files
+
+This comprehensive testing infrastructure ensures high code quality, prevents regressions, and validates both functionality and performance across all platforms and scenarios.
