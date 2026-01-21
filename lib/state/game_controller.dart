@@ -6,7 +6,8 @@ import '../domain/models/game.dart' as model;
 import '../domain/models/player.dart';
 import '../domain/models/round.dart';
 import '../domain/logic/schedule.dart';
-import '../domain/logic/validation.dart' as validation;
+import '../domain/logic/rules_engine.dart';
+import '../domain/logic/game_rules.dart';
 import 'game_state.dart';
 import 'game_list_controller.dart';
 
@@ -14,9 +15,11 @@ class GameController extends StateNotifier<GameState> {
   final GameRepository _repository;
   final GameListController _gameListController;
   final _uuid = const Uuid();
+  final RulesEngine _rulesEngine;
 
   GameController(this._repository, this._gameListController)
-      : super(const GameState()) {
+      : _rulesEngine = CardGameRulesEngine.create(),
+        super(const GameState()) {
     _loadLastGame();
   }
 
@@ -144,10 +147,33 @@ class GameController extends StateNotifier<GameState> {
     if (game == null) return 'No active game';
 
     final currentRound = game.rounds[game.currentRoundIndex];
-    return validation.validateResults(
+    final context = RuleContext(
       cardsThisRound: currentRound.cards,
-      actualWinsByPlayerId: actualWins,
+      playerCount: game.players.length,
+      roundNumber: game.currentRoundIndex + 1,
+      peakCards: game.settings.peakCards,
+      bonusExact: game.settings.bonusExact,
     );
+
+    final result = _rulesEngine.validate(context, actualWins);
+    return result.firstError;
+  }
+
+  /// Get full validation result including warnings
+  ValidationResult? validateResultsDetailed(Map<String, int> actualWins) {
+    final game = state.currentGame;
+    if (game == null) return null;
+
+    final currentRound = game.rounds[game.currentRoundIndex];
+    final context = RuleContext(
+      cardsThisRound: currentRound.cards,
+      playerCount: game.players.length,
+      roundNumber: game.currentRoundIndex + 1,
+      peakCards: game.settings.peakCards,
+      bonusExact: game.settings.bonusExact,
+    );
+
+    return _rulesEngine.validate(context, actualWins);
   }
 
   Future<void> saveResults(Map<String, int> actualWins) async {
@@ -157,13 +183,18 @@ class GameController extends StateNotifier<GameState> {
     try {
       final currentRound = game.rounds[game.currentRoundIndex];
 
-      // Validate
-      final error = validation.validateResults(
+      // Validate using rules engine
+      final context = RuleContext(
         cardsThisRound: currentRound.cards,
-        actualWinsByPlayerId: actualWins,
+        playerCount: game.players.length,
+        roundNumber: game.currentRoundIndex + 1,
+        peakCards: game.settings.peakCards,
+        bonusExact: game.settings.bonusExact,
       );
-      if (error != null) {
-        state = state.copyWith(error: error);
+
+      final validationResult = _rulesEngine.validate(context, actualWins);
+      if (!validationResult.isValid) {
+        state = state.copyWith(error: validationResult.firstError);
         return;
       }
 
