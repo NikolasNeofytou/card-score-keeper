@@ -7,34 +7,34 @@ A beautiful, feature-rich Flutter application for tracking scores in card games 
 ![Riverpod](https://img.shields.io/badge/State-Riverpod-00A8E8?style=for-the-badge)
 ![Hive](https://img.shields.io/badge/Storage-Hive-FDB62F?style=for-the-badge)
 
-## ✨ Key Features
+##  Key Features
 
-### 🎮 Game Management
+###  Game Management
 - **Multiple Games**: Create and manage multiple games simultaneously
 - **Game Switching**: Seamlessly switch between active games
 - **Archive System**: Archive completed games for later reference
 - **Persistent Storage**: Auto-saves using Hive database
 
-### 📊 Score Tracking
+###  Score Tracking
 - **Round-Based Scoring**: Track scores for each round of play
 - **Dynamic Player Count**: Support for 2-8 players per game
 - **Real-Time Updates**: Live leaderboard with automatic calculations
 - **Detailed History**: View complete round-by-round statistics
 
-### 🎯 Predictions & Analytics
+###  Predictions & Analytics
 - **Pre-Round Predictions**: Players predict their scores before each round
 - **Accuracy Tracking**: Monitor prediction accuracy over time
 - **Performance Metrics**: Win rates, averages, and trends
 - **Visual Statistics**: Charts and graphs using fl_chart
 
-### 🎨 Modern UI
+###  Modern UI
 - **GitHub-Inspired Design**: Clean, professional aesthetic
 - **Dark Mode**: Eye-friendly dark theme with GitHub's dark palette
 - **Light Mode**: Crisp, readable light theme
 - **Smooth Animations**: Polished transitions with flutter_animate
 - **Confetti Celebrations**: Celebrate winners with confetti effects
 
-### ⚡ Advanced Features
+###  Advanced Features
 - **Undo/Redo**: 50-state history for correcting mistakes
 - **Theme Switching**: Toggle between light/dark modes
 - **System Theme**: Automatically follow device theme preferences
@@ -46,7 +46,7 @@ A beautiful, feature-rich Flutter application for tracking scores in card games 
 |-------------|------------|-----------|
 | ![Home](docs/screenshots/home.png) | ![Scoreboard](docs/screenshots/scoreboard.png) | ![Dark](docs/screenshots/dark.png) |
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -238,11 +238,11 @@ Edit [pubspec.yaml](pubspec.yaml) to modify:
 
 ## Acceptance Criteria
 
-✅ Create game with players and peakCards=7 generates schedule [1,2,3,4,5,6,7,6,5,4,3,2,1]  
-✅ Each round: save predictions, then save results only when sum(actualWins)=cardsThisRound  
-✅ Leaderboard updates after each round  
-✅ Undo last completed round works  
-✅ App resumes last game after restart
+ Create game with players and peakCards=7 generates schedule [1,2,3,4,5,6,7,6,5,4,3,2,1]  
+ Each round: save predictions, then save results only when sum(actualWins)=cardsThisRound  
+ Leaderboard updates after each round  
+ Undo last completed round works  
+App resumes last game after restart
 
 ## Troubleshooting
 
