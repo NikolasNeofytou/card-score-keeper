@@ -28,8 +28,13 @@ class GameListState {
         error: error ?? this.error,
       );
 
-  GameInfo? get currentGame =>
-      games.where((g) => g.id == currentGameId).firstOrNull;
+  GameInfo? get currentGame {
+    if (currentGameId == null) return null;
+    for (final game in games) {
+      if (game.id == currentGameId) return game;
+    }
+    return null;
+  }
 
   List<GameInfo> get activeGames =>
       games.where((g) => g.status == GameStatus.active).toList();
