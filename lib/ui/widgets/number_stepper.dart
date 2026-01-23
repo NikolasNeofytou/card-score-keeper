@@ -1,5 +1,6 @@
 // lib/ui/widgets/number_stepper.dart
 import 'package:flutter/material.dart';
+import '../theme/design_tokens.dart';
 
 class NumberStepper extends StatelessWidget {
   final int value;
@@ -22,28 +23,61 @@ class NumberStepper extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (label != null) ...[
-          Text(label!, style: const TextStyle(fontSize: 16)),
-          const SizedBox(width: 12),
-        ],
-        IconButton(
-          icon: const Icon(Icons.remove_circle_outline),
-          onPressed: value > min ? () => onChanged(value - 1) : null,
-        ),
+        // Decrease button
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
-            borderRadius: BorderRadius.circular(8),
+            color: value > min
+                ? DesignTokens.primaryPurple
+                : Theme.of(context).colorScheme.surfaceVariant,
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+          ),
+          child: IconButton(
+            icon: Icon(
+              Icons.remove_rounded,
+              color: value > min
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            onPressed: value > min ? () => onChanged(value - 1) : null,
+          ),
+        ),
+
+        // Value display
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: DesignTokens.space12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: DesignTokens.space16,
+            vertical: DesignTokens.space12,
+          ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceVariant,
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           ),
           child: Text(
             value.toString(),
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
         ),
-        IconButton(
-          icon: const Icon(Icons.add_circle_outline),
-          onPressed: value < max ? () => onChanged(value + 1) : null,
+
+        // Increase button
+        Container(
+          decoration: BoxDecoration(
+            color: value < max
+                ? DesignTokens.primaryPurple
+                : Theme.of(context).colorScheme.surfaceVariant,
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+          ),
+          child: IconButton(
+            icon: Icon(
+              Icons.add_rounded,
+              color: value < max
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            onPressed: value < max ? () => onChanged(value + 1) : null,
+          ),
         ),
       ],
     );

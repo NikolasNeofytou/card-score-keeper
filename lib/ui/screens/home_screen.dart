@@ -1,218 +1,198 @@
-// lib/ui/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../state/providers.dart';
-import '../theme/app_colors.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final gameState = ref.watch(gameControllerProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    // Show error snackbar if there's an error
-    if (gameState.error != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(gameState.error!),
-            backgroundColor: Colors.red,
-            action: SnackBarAction(
-              label: 'Dismiss',
-              textColor: Colors.white,
-              onPressed: () {},
-            ),
-          ),
-        );
-      });
-    }
-
-    // Show loading indicator
-    if (gameState.isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Loading game...'),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+  Future<void> _clearAllData(WidgetRef ref, BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear All Data'),
+        content: const Text(
+            'This will delete all games and data. This action cannot be undone.\n\nAre you sure?'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.view_list_outlined),
-            onPressed: () => context.push('/games'),
-            tooltip: 'My Games',
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
           ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () => context.push('/settings'),
-            tooltip: 'Settings',
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Clear All'),
           ),
         ],
       ),
-      body: Container(
-        color: isDark ? AppColorsDark.background : AppColors.background,
-        child: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Simple Trophy Icon
-                  Container(
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.surface,
-                      border: Border.all(
-                        color: AppColors.border,
-                        width: 2,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.emoji_events,
-                      size: 64,
-                      color: AppColors.primary,
-                    ),
-                  ).animate().fadeIn(duration: 400.ms),
-                  const SizedBox(height: 32),
-
-                  // Title
-                  Text(
-                    'Card Game Scorekeeper',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                    textAlign: TextAlign.center,
-                  ).animate().fadeIn(duration: 400.ms),
-
-                  const SizedBox(height: 8),
-
-                  Text(
-                    'Track scores and predict winners',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                    textAlign: TextAlign.center,
-                  ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
-
-                  const SizedBox(height: 48),
-
-                  // Action Buttons
-                  if (gameState.currentGame != null) ...[
-                    _buildButton(
-                      context: context,
-                      label: 'Resume Game',
-                      icon: Icons.play_arrow,
-                      gradient: AppColors.gradientPrimary,
-                      onPressed: () => context.go('/scoreboard'),
-                      isPrimary: true,
-                    ).animate().fadeIn(duration: 400.ms, delay: 400.ms).scale(),
-                    const SizedBox(height: 16),
-                    _buildButton(
-                      context: context,
-                      label: 'New Game',
-                      icon: Icons.add,
-                      gradient: AppColors.gradientSecondary,
-                      onPressed: () => context.go('/create'),
-                      isPrimary: false,
-                    ).animate().fadeIn(duration: 400.ms, delay: 500.ms).scale(),
-                    const SizedBox(height: 16),
-                    _buildButton(
-                      context: context,
-                      label: 'History',
-                      icon: Icons.history,
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.textSecondary,
-                          AppColors.textTertiary
-                        ],
-                      ),
-                      onPressed: () => context.go('/history'),
-                      isPrimary: false,
-                    ).animate().fadeIn(duration: 400.ms, delay: 600.ms).scale(),
-                  ] else ...[
-                    _buildButton(
-                      context: context,
-                      label: 'Start New Game',
-                      icon: Icons.add,
-                      gradient: AppColors.gradientPrimary,
-                      onPressed: () => context.go('/create'),
-                      isPrimary: true,
-                    ).animate().fadeIn(duration: 400.ms, delay: 400.ms).scale(),
-                    const SizedBox(height: 16),
-                    _buildButton(
-                      context: context,
-                      label: 'View History',
-                      icon: Icons.history,
-                      gradient: AppColors.gradientSecondary,
-                      onPressed: () => context.go('/history'),
-                      isPrimary: false,
-                    ).animate().fadeIn(duration: 400.ms, delay: 500.ms).scale(),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
+
+    if (confirmed == true) {
+      try {
+        // Clear all Hive boxes
+        await Hive.deleteBoxFromDisk('games');
+        await Hive.deleteBoxFromDisk('app_v2');
+
+        // Reset all providers
+        ref.invalidate(gameListControllerProvider);
+        ref.invalidate(gameControllerProvider);
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ All data cleared! App reset to clean state.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('❌ Error clearing data: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
-  Widget _buildButton({
-    required BuildContext context,
-    required String label,
-    required IconData icon,
-    required Gradient gradient,
-    required VoidCallback onPressed,
-    required bool isPrimary,
-  }) {
-    return Container(
-      width: double.infinity,
-      constraints: const BoxConstraints(maxWidth: 400),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isPrimary ? AppColors.success : AppColors.surface,
-          foregroundColor: isPrimary ? Colors.white : AppColors.textPrimary,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-            side: isPrimary
-                ? BorderSide.none
-                : const BorderSide(color: AppColors.border, width: 1),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gameListState = ref.watch(gameListControllerProvider);
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        title: const Text('Card Score Keeper'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Trophy icon
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.emoji_events,
+                  size: 64,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 32),
+
+              // Title
+              Text(
+                'Welcome to Card Score Keeper',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Subtitle
+              Text(
+                'Track scores for your favorite card games',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 48),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: FilledButton(
+                  onPressed: () => context.push('/create'),
+                  child: const Text(
+                    'New Game',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Continue Game button
+              if (gameListState.games.isNotEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton(
+                    onPressed: () => context.push('/games'),
+                    child: const Text(
+                      'Continue Game',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 32),
+
+              // Clear All Data button (for development)
+              if (gameListState.games.isNotEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _clearAllData(ref, context),
+                    icon: Icon(
+                      Icons.delete_forever,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    label: Text(
+                      'Clear All Data',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.error,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 16),
+
+              // Settings button
+              TextButton.icon(
+                onPressed: () => context.push('/settings'),
+                icon: Icon(
+                  Icons.settings,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                label: Text(
+                  'Settings',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

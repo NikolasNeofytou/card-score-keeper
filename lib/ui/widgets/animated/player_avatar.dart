@@ -1,12 +1,16 @@
 // lib/ui/widgets/animated/player_avatar.dart
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../theme/design_tokens.dart';
 
+/// Modern Player Avatar with gaming-inspired design
 class PlayerAvatar extends StatelessWidget {
   final String name;
   final int colorIndex;
   final double size;
   final bool showBorder;
+  final bool isWinner;
+  final VoidCallback? onTap;
 
   const PlayerAvatar({
     super.key,
@@ -14,34 +18,35 @@ class PlayerAvatar extends StatelessWidget {
     required this.colorIndex,
     this.size = 40,
     this.showBorder = false,
+    this.isWinner = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.getPlayerColor(colorIndex);
+    final colorSet = DesignTokens.getPlayerColorSet(colorIndex);
     final initials = _getInitials(name);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
+    Widget avatar = Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color,
-            color.withOpacity(0.7),
-          ],
-        ),
+        // Modern flat design instead of gradients
+        color: colorSet.primary,
         border: showBorder
-            ? Border.all(color: Colors.white, width: 3)
+            ? Border.all(
+                color: isDark ? DesignTokens.darkTextPrimary : Colors.white,
+                width: size > 50 ? 3 : 2,
+              )
             : null,
+        // Subtle elevation for depth
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: colorSet.primary.withOpacity(isDark ? 0.3 : 0.2),
+            blurRadius: size * 0.15,
+            offset: Offset(0, size * 0.05),
           ),
         ],
       ),
@@ -50,12 +55,50 @@ class PlayerAvatar extends StatelessWidget {
           initials,
           style: TextStyle(
             color: Colors.white,
-            fontSize: size * 0.4,
-            fontWeight: FontWeight.bold,
+            fontSize: size * 0.35,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
     );
+
+    // Add winner glow effect
+    if (isWinner) {
+      avatar = Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: DesignTokens.goldPrimary.withOpacity(0.5),
+              blurRadius: size * 0.3,
+              spreadRadius: size * 0.05,
+            ),
+          ],
+        ),
+        child: avatar,
+      )
+          .animate(
+            onComplete: (controller) => controller.repeat(),
+          )
+          .shimmer(
+            duration: 2000.ms,
+            color: DesignTokens.goldSecondary.withOpacity(0.3),
+          );
+    }
+
+    // Add interaction if onTap is provided
+    if (onTap != null) {
+      avatar = Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(size / 2),
+          child: avatar,
+        ),
+      );
+    }
+
+    return avatar;
   }
 
   String _getInitials(String name) {

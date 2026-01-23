@@ -247,12 +247,28 @@ class HardenedHiveRepository implements GameRepository {
       final box = await _box();
 
       // Try TypeAdapter format first
-      final storedList = box.get(_keyGameListVersion) as List<StoredGameInfo>?;
-      if (storedList != null) {
+      final storedListRaw = box.get(_keyGameListVersion);
+      if (storedListRaw != null) {
         try {
-          return storedList.map((stored) => stored.toGameInfo()).toList();
+          List<StoredGameInfo> storedList = [];
+          if (storedListRaw is List<StoredGameInfo>) {
+            storedList = storedListRaw;
+          } else if (storedListRaw is List) {
+            // Handle List<dynamic> case - try to cast each item individually
+            for (final item in storedListRaw) {
+              if (item is StoredGameInfo) {
+                storedList.add(item);
+              }
+            }
+          }
+
+          if (storedList.isNotEmpty) {
+            return storedList.map((stored) => stored.toGameInfo()).toList();
+          }
         } catch (e) {
           print('Error converting stored game list: $e');
+          // Clear corrupted data
+          await box.delete(_keyGameListVersion);
         }
       }
 

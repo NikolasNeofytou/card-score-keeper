@@ -1,0 +1,325 @@
+// lib/ui/screens/scoreboard_screen.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../domain/models/game.dart' as model;
+import '../../state/game_state.dart';
+import '../../state/providers.dart';
+import '../theme/design_tokens.dart';
+import '../widgets/animated/trophy_icon.dart';
+import '../widgets/animated/player_avatar.dart';
+import '../widgets/animated/animated_score.dart';
+import '../widgets/animated/confetti_celebration.dart';
+import '../widgets/clutch_notification_banner.dart';
+import '../widgets/leaderboard_table.dart';
+
+class ScoreboardScreen extends ConsumerWidget {
+  const ScoreboardScreen({super.key});
+
+  bool _isClutchSituation(model.Game game, List<LeaderboardEntry> leaderboard) {
+    if (leaderboard.length < 2) return false;
+
+    final topScore = leaderboard[0].totalPoints;
+    final secondScore = leaderboard[1].totalPoints;
+    final scoreDifference = topScore - secondScore;
+
+    // Clutch if difference is small or if we're in the last few rounds
+    final isCloseScore = scoreDifference <= 30;
+    final isLateGame = game.currentRoundIndex >= (game.rounds.length * 0.7);
+    final hasNegativeScores = leaderboard.any((entry) => entry.totalPoints < 0);
+
+    return isCloseScore ||
+        (isLateGame && scoreDifference <= 50) ||
+        hasNegativeScores;
+  }
+
+  String _getClutchMessage(
+      model.Game game, List<LeaderboardEntry> leaderboard) {
+    if (leaderboard.length < 2) return 'The competition is heating up!';
+
+    final topScore = leaderboard[0].totalPoints;
+    final secondScore = leaderboard[1].totalPoints;
+    final scoreDifference = topScore - secondScore;
+
+    if (scoreDifference <= 10) {
+      return 'Only ${scoreDifference} points separate the leaders!';
+    } else if (scoreDifference <= 30) {
+      return 'Tight race with ${scoreDifference} point difference!';
+    } else if (game.currentRoundIndex >= (game.rounds.length * 0.8)) {
+      return 'Final rounds - everything matters now!';
+    } else {
+      return 'The stakes are rising!';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gameState = ref.watch(gameControllerProvider);
+    final game = gameState.currentGame;
+
+    if (game == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Scoreboard')),
+        body: const Center(child: Text('No active game')),
+      );
+    }
+
+    final isFinished = game.state == model.GameState.finished;
+    final currentRound = gameState.currentRound;
+    final roundNumber = game.currentRoundIndex + 1;
+    final totalRounds = game.rounds.length;
+
+    String getButtonText() {
+      if (isFinished) return 'Game Finished';
+      if (game.state == model.GameState.prediction) {
+        return 'Start Round $roundNumber';
+      } else {
+        return 'End Round $roundNumber';
+      }
+    }
+
+    void handlePrimaryAction() {
+      if (isFinished) return;
+
+      if (game.state == model.GameState.prediction) {
+        context.push('/predictions');
+      } else {
+        context.push('/results');
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(game.name ?? 'Scoreboard'),
+        actions: [
+          // Undo button
+          Consumer(
+            builder: (context, ref, _) {
+              final undoState = ref.watch(undoControllerProvider);
+              return IconButton(
+                icon: const Icon(Icons.undo),
+                onPressed: undoState.canUndo
+                    ? () {
+                        final previousState =
+                            ref.read(undoControllerProvider.notifier).undo();
+                        if (previousState != null) {
+                          ref
+                              .read(gameControllerProvider.notifier)
+                              .restoreState(previousState);
+                        }
+                      }
+                    : null,
+                tooltip: 'Undo',
+              );
+            },
+          ),
+          // Redo button
+          Consumer(
+            builder: (context, ref, _) {
+              final undoState = ref.watch(undoControllerProvider);
+              return IconButton(
+                icon: const Icon(Icons.redo),
+                onPressed: undoState.canRedo
+                    ? () {
+                        final nextState =
+                            ref.read(undoControllerProvider.notifier).redo();
+                        if (nextState != null) {
+                          ref
+                              .read(gameControllerProvider.notifier)
+                              .restoreState(nextState);
+                        }
+                      }
+                    : null,
+                tooltip: 'Redo',
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => context.push('/history'),
+            tooltip: 'Round History',
+          ),
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'new',
+                child: Text('New Game'),
+              ),
+            ],
+            onSelected: (value) {
+              if (value == 'new') {
+                context.go('/create');
+              }
+            },
+          ),
+        ],
+      ),
+      body: GestureDetector(
+        onPanEnd: (details) {
+          // Check if this is a horizontal swipe to the right
+          // Only allow swipe for ENDING rounds (when in scoring phase), not starting them
+          if (details.velocity.pixelsPerSecond.dx > 300 &&
+              !isFinished &&
+              game.state == model.GameState.scoring) {
+            handlePrimaryAction();
+          }
+        },
+        child: ConfettiCelebration(
+          shouldCelebrate: isFinished,
+          child: SafeArea(
+            child: Container(
+              color: Theme.of(context).colorScheme.background,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(DesignTokens.space16),
+                  child: Column(
+                    children: [
+                      // Swipe instruction banner (only show for ending rounds)
+                      if (!isFinished && game.state == model.GameState.scoring)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: DesignTokens.space8,
+                            horizontal: DesignTokens.space12,
+                          ),
+                          margin: const EdgeInsets.only(
+                              bottom: DesignTokens.space16),
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(
+                                DesignTokens.radiusMedium),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.swipe_right,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                                size: 20,
+                              ),
+                              const SizedBox(width: DesignTokens.space8),
+                              Text(
+                                'Swipe right to end round',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryContainer,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      // Modern Round Info Card
+                      Container(
+                        padding: const EdgeInsets.all(DesignTokens.space24),
+                        decoration: BoxDecoration(
+                          color: isFinished
+                              ? DesignTokens.successPrimary
+                              : Theme.of(context).colorScheme.primary,
+                          borderRadius:
+                              BorderRadius.circular(DesignTokens.radiusXLarge),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (isFinished
+                                      ? DesignTokens.successPrimary
+                                      : Theme.of(context).colorScheme.primary)
+                                  .withOpacity(0.2),
+                              blurRadius: DesignTokens.space16,
+                              offset: const Offset(0, DesignTokens.space8),
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (isFinished)
+                                  Icon(
+                                    Icons.emoji_events_rounded,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                if (isFinished)
+                                  const SizedBox(width: DesignTokens.space8),
+                                Text(
+                                  isFinished
+                                      ? 'Game Complete!'
+                                      : 'Round $roundNumber of $totalRounds',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: -0.25,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            if (currentRound != null && !isFinished) ...[
+                              const SizedBox(height: DesignTokens.space8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: DesignTokens.space12,
+                                  vertical: DesignTokens.space6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(
+                                      DesignTokens.radiusRound),
+                                ),
+                                child: Text(
+                                  '${currentRound.cards} cards • ${game.state == model.GameState.prediction ? 'Enter predictions' : 'Enter results'}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ).animate().fadeIn(duration: 400.ms).scale(),
+
+                      const SizedBox(height: 24),
+
+                      // Modern Clutch Notification
+                      if (_isClutchSituation(game, gameState.leaderboard) &&
+                          !isFinished)
+                        ClutchNotificationStyle.intense(
+                          message:
+                              _getClutchMessage(game, gameState.leaderboard),
+                          onTap: () => context.push('/clutch'),
+                        ),
+
+                      // Leaderboard
+                      LeaderboardTable(
+                        entries: gameState.leaderboard,
+                        isGameFinished: isFinished,
+                      ),
+
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

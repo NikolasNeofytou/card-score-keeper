@@ -30,5 +30,19 @@ Future<void> main() async {
     Hive.registerAdapter(StoredGameInfoAdapter());
   }
 
+  // Development mode: Clear data on every launch
+  const bool isDevelopment =
+      bool.fromEnvironment('DEVELOPMENT', defaultValue: false);
+  if (isDevelopment) {
+    print('🧹 Development mode: Clearing all data for fresh start...');
+    try {
+      await Hive.deleteBoxFromDisk('games');
+      await Hive.deleteBoxFromDisk('app_v2');
+      print('✅ Data cleared successfully');
+    } catch (e) {
+      print('ℹ️  No existing data to clear: $e');
+    }
+  }
+
   runApp(const ProviderScope(child: App()));
 }
