@@ -9,6 +9,10 @@ import '../ui/screens/history_screen.dart';
 import '../ui/screens/game_list_screen.dart';
 import '../ui/screens/settings_screen.dart';
 import '../ui/screens/clutch_screen.dart';
+import '../ui/screens/game_lobby_screen.dart';
+import '../ui/screens/qr_scanner_screen.dart';
+import '../ui/screens/spectator_screen.dart';
+import '../domain/models/game.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -48,6 +52,35 @@ final router = GoRouter(
     GoRoute(
       path: '/clutch',
       builder: (context, state) => const ClutchScreen(),
+    ),
+    GoRoute(
+      path: '/lobby',
+      builder: (context, state) {
+        final game = state.extra as Game?;
+        if (game == null) {
+          // Redirect to home if no game provided
+          return const HomeScreen();
+        }
+        return GameLobbyScreen(game: game);
+      },
+    ),
+    GoRoute(
+      path: '/qr-scanner',
+      builder: (context, state) => const QRScannerScreen(),
+    ),
+    GoRoute(
+      path: '/spectator',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>?;
+        if (args == null) {
+          return const HomeScreen();
+        }
+        return SpectatorScreen(
+          gameData: args['gameData'],
+          serverUrl: args['serverUrl'],
+          message: args['message'],
+        );
+      },
     ),
   ],
 );

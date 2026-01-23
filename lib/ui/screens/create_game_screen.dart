@@ -82,32 +82,100 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
       }
 
       print(
-          'Creating game with settings: peakCards=$_peakCards, bonusExact=$_bonusExact');
+        'Creating game with settings: peakCards=$_peakCards, bonusExact=$_bonusExact',
+      );
 
       try {
-        await ref.read(gameControllerProvider.notifier).createGame(
+        await ref
+            .read(gameControllerProvider.notifier)
+            .createGame(
               playerNames: playerNames,
               peakCards: _peakCards,
               bonusExact: _bonusExact,
               gameName: _gameName,
             );
 
-        print('Game created successfully, navigating to scoreboard');
+        print('Game created successfully');
 
         if (mounted) {
-          context.go('/scoreboard');
+          // Show game mode selection
+          _showGameModeDialog();
         }
       } catch (e) {
         print('Error creating game: $e');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error creating game: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error creating game: $e')));
         }
       }
     } else {
       print('Form validation failed');
     }
+  }
+
+  void _showGameModeDialog() {
+    final theme = Theme.of(context);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: theme.colorScheme.surfaceContainerLow,
+        title: Text(
+          'Choose Game Mode',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'How do you want to play?',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.go('/scoreboard');
+                },
+                icon: const Icon(Icons.smartphone),
+                label: const Text('Single Device'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  final game = ref.read(gameControllerProvider);
+                  if (game != null) {
+                    context.go('/lobby', extra: game);
+                  }
+                },
+                icon: const Icon(Icons.group),
+                label: const Text('Multiplayer (QR Code)'),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: theme.colorScheme.primary),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override

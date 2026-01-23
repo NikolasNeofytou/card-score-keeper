@@ -13,7 +13,8 @@ class HomeScreen extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: const Text('Clear All Data'),
         content: const Text(
-            'This will delete all games and data. This action cannot be undone.\n\nAre you sure?'),
+          'This will delete all games and data. This action cannot be undone.\n\nAre you sure?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -64,10 +65,7 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: const Text('Card Score Keeper'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Card Score Keeper'), centerTitle: true),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -94,9 +92,9 @@ class HomeScreen extends ConsumerWidget {
               Text(
                 'Welcome to Card Score Keeper',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 textAlign: TextAlign.center,
               ),
 
@@ -106,8 +104,8 @@ class HomeScreen extends ConsumerWidget {
               Text(
                 'Track scores for your favorite card games',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
 
@@ -119,10 +117,23 @@ class HomeScreen extends ConsumerWidget {
                   onPressed: () => context.push('/create'),
                   child: const Text(
                     'New Game',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Join Game button (QR Scanner)
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton.icon(
+                  onPressed: () => context.push('/qr-scanner'),
+                  icon: const Icon(Icons.qr_code_scanner),
+                  label: const Text(
+                    'Join Game (Scan QR)',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
